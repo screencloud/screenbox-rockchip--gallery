@@ -1,0 +1,5 @@
+    {
+        "app_name": "gallery",
+        "app_icon": "icon_gallery.png",
+        "app_file": "galleryView"
+    }
