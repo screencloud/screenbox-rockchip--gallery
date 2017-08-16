@@ -2,29 +2,31 @@
 #define GALLERYWIDGETS_H
 
 #include "basewidget.h"
-#include "gallerytopwidgets.h"
-#include "middleWidget/gallerymiddlewidgets.h"
-//#include "mainwindow.h"
+#include "top/gallerytopwidgets.h"
+#include "middle/gallerymiddlewidgets.h"
+#include "global_value.h"
 
-#include <QObject>
-
-class MainWindow;
-
-class galleryWidgets:public baseWidget
+/**
+ * The applicatiion contains top and middle widget and
+ * each has it's own layout and connection control.
+ */
+class GalleryWidgets:public BaseWidget
 {
     Q_OBJECT
 public:
-    galleryWidgets(QWidget *parent,MainWindow *mainWid);
-    MainWindow *m_mainWid;
+    GalleryWidgets(QWidget *parent);
+    ~GalleryWidgets();
 
-    galleryTopWidgets *m_topWid;
-    galleryMiddleWidgets *m_middleWid;
+    GalleryMiddleWidgets* getMiddleWidget(){return m_middleWid;}
+
 private:
-    void init();
+    void initConnection();
     void initLayout();
 
+    GalleryTopWidgets *m_topWid;
+    GalleryMiddleWidgets *m_middleWid;
 private slots:
-    void slot_return();
+    void slot_onReturnClicked();
     void slot_onViewerResChanged(QString);
 };
 

@@ -12,22 +12,26 @@
 #include "thumbimageitem.h"
 #include "basepushbutton.h"
 
-class galleryMiddleWidgets;
+class GalleryMiddleWidgets;
 
-class thumbImageWidget:public baseWidget
+/**
+ * one of three stacked widgets.
+ * it show the all images Thumbnail on special search path.
+ */
+class ThumbImageWidget:public BaseWidget
 {
     Q_OBJECT
 public:
-    thumbImageWidget(QWidget *parent);
+    ThumbImageWidget(QWidget *parent);
 private:
     void initLayout();
     void initConnection();
     void updateImageCount();
     void updateTipText();
 private:
-    galleryMiddleWidgets *m_middleWidgets;
+    GalleryMiddleWidgets *m_middleWidgets;
     bool editMode;
-    // control bottom
+    // Control bottom
     QWidget *m_controlBottom;
     QLabel *m_imageCountText;
     QLabel *m_tipText;
@@ -37,17 +41,14 @@ private:
     QListWidget *m_imageListWid;
 
     QMap<QString,QImage> m_imagesRes;
-    QList<thumbImageItem*> m_selectedItems;
-
+    QList<ThumbImageItem*> m_selectedItems;
 signals:
     void imagesResChanged(QMap<QString,QImage>);
-
 private slots:
     void slot_onImagesResChanged(QMap<QString,QImage>);
     void slot_onListItemClick(QListWidgetItem*);
     void slot_changeImageMode();
     void slot_updateImages();
-
 };
 
 

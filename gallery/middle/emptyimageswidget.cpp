@@ -11,16 +11,16 @@ int center_image_width = 300;
 int center_image_width = 150;
 #endif
 
-emptyImagesWidget::emptyImagesWidget(QWidget *parent):baseWidget(parent)
+EmptyImagesWidget::EmptyImagesWidget(QWidget *parent):BaseWidget(parent)
 {
     setStyleSheet("QLabel{color:white}");
     initLayout();
 }
-void emptyImagesWidget::initLayout()
+void EmptyImagesWidget::initLayout()
 {
     QVBoxLayout *vmainlyout = new QVBoxLayout;
 
-    flatButton *centerImage = new flatButton(this);
+    FlatButton *centerImage = new FlatButton(this);
     centerImage->setEnabled(false);
     centerImage->setFixedSize(center_image_width,center_image_width);
     centerImage->setStyleSheet("QPushButton{background:transparent;border-image:url(:/image/gallery/ic_empty_image.png)}");
@@ -44,7 +44,7 @@ void emptyImagesWidget::initLayout()
     vmainlyout->addStretch(0);
     vmainlyout->setSpacing(15);
 
-    // in order to set the layout in the center of page
+    // In order to set the layout in the center of page
     QHBoxLayout *lyout = new QHBoxLayout;
     lyout->addStretch(1);
     lyout->addLayout(vmainlyout);

@@ -9,10 +9,10 @@
 
 #include "brightnessmapper.h"
 
-class thumbImageItem:public QWidget
+class ThumbImageItem:public QWidget
 {
 public:
-    thumbImageItem(QString imagePath,QImage image);
+    ThumbImageItem(QString imagePath,QImage image);
 
     void onItemClick();
     QImage getImage(){return m_image;}
@@ -20,23 +20,20 @@ public:
     bool getCheckState(){return isChecked;}
 private:
     void initLayout();
-
 private:
-    brightnessMapper *imageMapper;
+    bool isChecked;
+    bool toUpdate;
 
+    brightnessMapper *imageMapper;
     QStackedLayout *m_stackedLayout;
 
     QLabel *thumbImage;
     QLabel *m_checkImage;
     QImage m_image;
     QString m_imagePath;
-
-    bool isChecked;
-    bool toUpdate;
 protected:
     void resizeEvent(QResizeEvent *event);
     void paintEvent(QPaintEvent *event);
-
 };
 
 #endif // THUMBIMAGEITEM_H

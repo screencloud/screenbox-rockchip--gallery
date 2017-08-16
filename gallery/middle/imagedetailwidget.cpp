@@ -8,13 +8,10 @@ int detail_widget_height = 900;
 int confirm_button_width = 130;
 int confirm_button_hieght = 60;
 int title_width = 200;
-
-
 #else
 int detail_widget_width = 350;
 int detail_widget_height = 470;
-
-int confirm_button_width = 60;
+int confirm_button_width = 80;
 int confirm_button_hieght = 30;
 int title_width = 80;
 
@@ -45,7 +42,7 @@ void ImageDetailWidget::initLayout()
     underLine->setStyleSheet("QFrame{border:1px solid rgb(255,255,255);}");
     underLine->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
 
-    // header
+    // Header
     QHBoxLayout *headerLyout = new QHBoxLayout;
 
     QLabel *titleLabel = new QLabel(str_image_information,this);
@@ -59,7 +56,7 @@ void ImageDetailWidget::initLayout()
     headerLyout->addStretch(0);
     headerLyout->addSpacing(10);
 
-    // image infomation
+    // Image infomation
     QVBoxLayout *infoLyout = new QVBoxLayout;
 
     nameItem = new ImageItem(this);
@@ -76,10 +73,10 @@ void ImageDetailWidget::initLayout()
     infoLyout->addWidget(sizeItem);
     infoLyout->addWidget(createTimeItem);
 
-    // confirm cancel button
+    // Confirm cancel button
     QHBoxLayout *controlLyout = new QHBoxLayout;
 
-    m_btnConfirm = new flatButton(str_confirm,this);
+    m_btnConfirm = new FlatButton(str_confirm,this);
     m_btnConfirm->setStyleSheet("QPushButton{background:rgb(36,184,71);color:white;border-radius:5px}"
                                 "QPushButton::hover{background:rgb(25,166,58)}"
                                 "QPushButton::pressed{background:rgb(25,166,58)}");

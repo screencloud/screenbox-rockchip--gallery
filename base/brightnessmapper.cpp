@@ -1,6 +1,7 @@
 #include "brightnessmapper.h"
 #include <math.h>
 #include <QDebug>
+
 brightnessMapper::brightnessMapper()
 {
     for(int i = 0; i < 256; i++)
@@ -78,6 +79,8 @@ void brightnessMapper::apply(const QImage &from, QImage &to)
                 pTo[j] = qRgb(r, g, b);
             }
         }
+        break;
+    default:
         break;
     }
 }

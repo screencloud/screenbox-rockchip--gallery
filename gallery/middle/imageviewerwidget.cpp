@@ -15,19 +15,21 @@ int layout_spacing = 30;
 
 #endif
 
-imageViewerWidget::imageViewerWidget(QWidget *parent):baseWidget(parent)
+ImageViewerWidget::ImageViewerWidget(QWidget *parent):BaseWidget(parent)
 {
-    setObjectName("imageViewerWidget");
-    setStyleSheet("#imageViewerWidget{background:rgb(0,0,0)}");
-    m_middleWidgets = (galleryMiddleWidgets*)parent;
+    m_middleWidgets = (GalleryMiddleWidgets*)parent;
+
+    // Set background color.
+    setObjectName("ImageViewerWidget");
+    setStyleSheet("#ImageViewerWidget{background:rgb(0,0,0)}");
+
     initLayout();
     initConnection();
 }
 
-void imageViewerWidget::initLayout()
+void ImageViewerWidget::initLayout()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    //    mainLayout->setStackingMode(QStackedLayout::StackAll);
 
     m_imageViewer = new ImageViewer(this);
     m_imageControler = new ImageControler(this);
@@ -40,7 +42,7 @@ void imageViewerWidget::initLayout()
     setLayout(mainLayout);
 }
 
-void imageViewerWidget::initConnection()
+void ImageViewerWidget::initConnection()
 {
     connect(this,SIGNAL(imagesResChanged(QMap<QString,QImage>,bool)),this,SLOT(slot_onImagesResChanged(QMap<QString,QImage>,bool)));
 
@@ -53,7 +55,7 @@ void imageViewerWidget::initConnection()
     connect(m_imageControler->m_btnDetail,SIGNAL(clicked(bool)),this,SLOT(slot_viewDetail()));
 }
 
-void imageViewerWidget::updateRes(QString imagePath, QImage image)
+void ImageViewerWidget::updateRes(QString imagePath, QImage image)
 {
     m_imageViewer->setPixmap(QPixmap::fromImage(image));
     m_imagePath = imagePath;
@@ -61,7 +63,7 @@ void imageViewerWidget::updateRes(QString imagePath, QImage image)
     emit m_middleWidgets->viewerResChanged(imagePath);
 }
 
-void imageViewerWidget::slot_onImagesResChanged(QMap<QString,QImage> imagesRes,bool update)
+void ImageViewerWidget::slot_onImagesResChanged(QMap<QString,QImage> imagesRes,bool update)
 {
     m_imagesRes = imagesRes;
     if(!m_imagesRes.keys().contains(m_imagePath)&&update)
@@ -71,7 +73,7 @@ void imageViewerWidget::slot_onImagesResChanged(QMap<QString,QImage> imagesRes,b
     }
 }
 
-void imageViewerWidget::slot_lastImage()
+void ImageViewerWidget::slot_lastImage()
 {
     QMap<QString,QImage>::Iterator  it = m_imagesRes.begin();
     while(it != m_imagesRes.end())
@@ -90,7 +92,7 @@ void imageViewerWidget::slot_lastImage()
     }
 }
 
-void imageViewerWidget::slot_nextImage()
+void ImageViewerWidget::slot_nextImage()
 {
     QMap<QString,QImage>::Iterator  it = m_imagesRes.begin();
     while(it!=m_imagesRes.end())
@@ -109,7 +111,7 @@ void imageViewerWidget::slot_nextImage()
     }
 }
 
-void imageViewerWidget::slot_viewDetail()
+void ImageViewerWidget::slot_viewDetail()
 {
     QFileInfo *info = new QFileInfo(m_imagePath);
     if(info->exists())
@@ -118,7 +120,7 @@ void imageViewerWidget::slot_viewDetail()
     }
 }
 
-void imageViewerWidget::slot_deleteImage()
+void ImageViewerWidget::slot_deleteImage()
 {
     QFileInfo *info = new QFileInfo(m_imagePath);
     if(info->exists())
@@ -136,17 +138,17 @@ void imageViewerWidget::slot_deleteImage()
     }
 }
 
-void imageViewerWidget::slot_imageZoomOut()
+void ImageViewerWidget::slot_imageZoomOut()
 {
     m_imageViewer->zoomOut();
 }
 
-void imageViewerWidget::slot_imageZoomIn()
+void ImageViewerWidget::slot_imageZoomIn()
 {
     m_imageViewer->zoomIn();
 }
 
-void imageViewerWidget::slot_imageRotate()
+void ImageViewerWidget::slot_imageRotate()
 {
     m_imageViewer->clockwise90();
 }

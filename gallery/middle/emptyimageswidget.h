@@ -3,10 +3,10 @@
 
 #include "basewidget.h"
 
-class emptyImagesWidget:public baseWidget
+class EmptyImagesWidget:public BaseWidget
 {
 public:
-    emptyImagesWidget(QWidget *parent);
+    EmptyImagesWidget(QWidget *parent);
 private:
     void initLayout();
 };

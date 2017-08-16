@@ -20,12 +20,12 @@ struct luther_gliethttp {
 static int open_luther_gliethttp_socket(void);
 static void parse_event(const char *msg, struct luther_gliethttp *luther_gliethttp);
 
-ueventThread::ueventThread(QObject *parent):QThread(parent)
+UeventThread::UeventThread(QObject *parent):QThread(parent)
 {
 
 }
 
-void ueventThread::run()
+void UeventThread::run()
 {
     int device_fd = -1;
     char msg[UEVENT_MSG_LEN+2];
@@ -81,7 +81,7 @@ static void parse_event(const char *msg, struct luther_gliethttp *luther_glietht
     luther_gliethttp->major = -1;
     luther_gliethttp->minor = -1;
 
-    /* currently ignoring SEQNUM */
+    /* Currently ignoring SEQNUM */
     while (*msg) {
         if (!strncmp(msg, "ACTION=", 7)) {
             msg += 7;
@@ -103,7 +103,7 @@ static void parse_event(const char *msg, struct luther_gliethttp *luther_glietht
             luther_gliethttp->minor = atoi(msg);
         }
 
-        /* advance to after the next \0 */
+        /* Advance to after the next \0 */
         while(*msg++);
     }
 
@@ -112,9 +112,10 @@ static void parse_event(const char *msg, struct luther_gliethttp *luther_glietht
         printf("event{'%s','%s','%s','%s',%d,%d}\n",
                luther_gliethttp->action, luther_gliethttp->path, luther_gliethttp->subsystem,
                luther_gliethttp->firmware, luther_gliethttp->major, luther_gliethttp->minor);
-        if(mainwid!=NULL)
+        if(mainWindow!=NULL)
         {
-            emit mainwid->beginUpdateMediaResource();
+            qDebug("uevent====");
+            emit mainWindow->beginUpdateMediaResource();
         }
 
     }

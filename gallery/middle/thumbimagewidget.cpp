@@ -3,10 +3,11 @@
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QCheckBox>
+#include <QInputDialog>
 
 #include "thumbimageitem.h"
 #include "global_value.h"
-#include <cmessagebox.h>
+#include "cmessagebox.h"
 
 #ifdef DEVICE_EVB
 int thumb_image_width = 280;
@@ -16,24 +17,25 @@ int button_height = 60;
 
 #else
 int thumb_image_width = 110;
-int bottom_widget_height = 50;
-int button_width = 60;
-int button_height = 30;
+int bottom_widget_height = 70;
+int button_width = 80;
+int button_height = 40;
 
 #endif
 
-thumbImageWidget::thumbImageWidget(QWidget *parent):baseWidget(parent),editMode(false)
+ThumbImageWidget::ThumbImageWidget(QWidget *parent):BaseWidget(parent),editMode(false)
 {
-    m_middleWidgets = (galleryMiddleWidgets*)parent;
+    m_middleWidgets = (GalleryMiddleWidgets*)parent;
+
     initLayout();
     initConnection();
 }
 
-void thumbImageWidget::initLayout()
+void ThumbImageWidget::initLayout()
 {
     QVBoxLayout *mainLyout = new QVBoxLayout;
 
-    // control bottom
+    // Layout of bottom control widgets.
     m_controlBottom = new QWidget(this);
     m_controlBottom->setStyleSheet("background:rgb(20,22,28)");
     m_controlBottom->setFixedHeight(bottom_widget_height);
@@ -75,7 +77,7 @@ void thumbImageWidget::initLayout()
 
     m_controlBottom->setLayout(bottomLayout);
 
-    // listWidget
+    // Layout of image thumb list.
     m_imageListWid = new QListWidget(this);
     m_imageListWid->setIconSize(QSize(thumb_image_width,thumb_image_width));
     m_imageListWid->setStyleSheet("QListWidget::item:selected{background: transparent;}");
@@ -99,21 +101,20 @@ void thumbImageWidget::initLayout()
     setLayout(mainLyout);
 }
 
-void thumbImageWidget::initConnection()
+void ThumbImageWidget::initConnection()
 {
     connect(this,SIGNAL(imagesResChanged(QMap<QString,QImage>)),this,SLOT(slot_onImagesResChanged(QMap<QString,QImage>)));
     connect(m_btnMode,SIGNAL(clicked(bool)),this,SLOT(slot_changeImageMode()));
     connect(m_btnUpdate,SIGNAL(clicked(bool)),this,SLOT(slot_updateImages()));
     connect(m_imageListWid,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(slot_onListItemClick(QListWidgetItem*)));
-
 }
 
-void thumbImageWidget::updateImageCount()
+void ThumbImageWidget::updateImageCount()
 {
     m_imageCountText->setText(str_image_and_preview+"("+QString::number(m_imageListWid->count())+")");
 }
 
-void thumbImageWidget::updateTipText()
+void ThumbImageWidget::updateTipText()
 {
     if(!editMode){
         m_tipText->setText("");
@@ -122,7 +123,7 @@ void thumbImageWidget::updateTipText()
     }
 }
 
-void thumbImageWidget::slot_onImagesResChanged(QMap<QString,QImage> imagesRes)
+void ThumbImageWidget::slot_onImagesResChanged(QMap<QString,QImage> imagesRes)
 {
     m_imagesRes.clear();
     m_imageListWid->clear();
@@ -137,7 +138,7 @@ void thumbImageWidget::slot_onImagesResChanged(QMap<QString,QImage> imagesRes)
     {
         QListWidgetItem *litsItem = new QListWidgetItem(/*QIcon(QPixmap::fromImage(m_images.at(i)).scaled(130,130)),NULL*/);
 
-        thumbImageItem *itemWid = new thumbImageItem(it.key(),it.value());
+        ThumbImageItem *itemWid = new ThumbImageItem(it.key(),it.value());
 
         litsItem->setSizeHint(QSize(thumb_image_width,thumb_image_width));
         m_imageListWid ->addItem(litsItem);
@@ -151,9 +152,9 @@ void thumbImageWidget::slot_onImagesResChanged(QMap<QString,QImage> imagesRes)
     }
 }
 
-void thumbImageWidget::slot_onListItemClick(QListWidgetItem *listItem)
+void ThumbImageWidget::slot_onListItemClick(QListWidgetItem *listItem)
 {
-    thumbImageItem *imageItem = (thumbImageItem*)m_imageListWid->itemWidget(listItem);
+    ThumbImageItem *imageItem = (ThumbImageItem*)m_imageListWid->itemWidget(listItem);
     if(editMode)
     {
         imageItem->onItemClick();
@@ -171,7 +172,7 @@ void thumbImageWidget::slot_onListItemClick(QListWidgetItem *listItem)
     }
 }
 
-void thumbImageWidget::slot_changeImageMode()
+void ThumbImageWidget::slot_changeImageMode()
 {
     if(editMode)
     {
@@ -194,23 +195,34 @@ void thumbImageWidget::slot_changeImageMode()
     }
 }
 
-void thumbImageWidget::slot_updateImages()
+void ThumbImageWidget::slot_updateImages()
 {
     if(m_selectedItems.size()>0&&editMode){
         int result = CMessageBox::showCMessageBox(this,str_question_delete_image,str_button_delete,str_button_cancel);
         if(result == RESULT_CONFIRM)
         {
-            // delete images selected
+            // Delete images selected
             for(int i=0;i<m_selectedItems.size();i++)
             {
-                thumbImageItem *imageItem = m_selectedItems.at(i);
+                ThumbImageItem *imageItem = m_selectedItems.at(i);
                 if(QFile::remove(imageItem->getImagePath())){
                     m_imagesRes.remove(imageItem->getImagePath());
                 }
             }
             emit m_middleWidgets->imagesResChanged(m_imagesRes);
         }
-    }else{   // reserch images
-        mainwid->slot_updateMedia2();
+    }else{
+        bool isConfirm;
+        QString appendSuffix = QInputDialog::getText(mainWindow,"Add Refresh Suffix",
+                                                     "Please input extra file suffix",
+                                                     QLineEdit::Normal,
+                                                     "",
+                                                     &isConfirm);
+        if(isConfirm){
+            if(!appendSuffix.isEmpty()){
+                m_middleWidgets->addRefreshSuffix(appendSuffix);
+            }
+            mainWindow->slot_updateMedia();
+        }
     }
 }

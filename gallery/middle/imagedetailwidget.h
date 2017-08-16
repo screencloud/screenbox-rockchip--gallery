@@ -32,7 +32,7 @@ protected:
     int exec();
     void closeEvent(QCloseEvent *event);
 public:
-    flatButton *m_btnConfirm;
+    FlatButton *m_btnConfirm;
 
     ImageItem *nameItem;
     ImageItem *patternItem;

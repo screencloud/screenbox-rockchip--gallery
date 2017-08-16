@@ -4,30 +4,23 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-
+QT  += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = galleryView
 TEMPLATE = app
 
+# 3399Linux、Big DPI
+DEFINES += DEVICE_EVB
+
+INCLUDEPATH +=$$PWD main
+include(main/main.pri)
 
 INCLUDEPATH +=$$PWD base
 include(base/base.pri)
 
 INCLUDEPATH +=$$PWD gallery
 include(gallery/gallery.pri)
-
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    global_value.cpp \
-    inotifythread.cpp \
-    ueventthread.cpp
-
-HEADERS  += mainwindow.h \
-    global_value.h \
-    inotifythread.h \
-    ueventthread.h
 
 RESOURCES += \
     res_gallery.qrc \

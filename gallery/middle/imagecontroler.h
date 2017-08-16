@@ -9,8 +9,6 @@ class ImageControler:public QWidget
 public:
     ImageControler(QWidget *parent = 0);
 
-private:
-    void initLayout();
 public:
     QPushButton *m_btnLast;
     QPushButton *m_btnZoomOut;
@@ -19,6 +17,9 @@ public:
     QPushButton *m_btnDetail;
     QPushButton *m_btnDelete;
     QPushButton *m_btnNext;
+
+private:
+    void initLayout();
 };
 
 #endif // IMAGECONTROLER_H

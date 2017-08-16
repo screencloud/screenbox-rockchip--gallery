@@ -10,26 +10,30 @@
 
 #include <QLabel>
 
-class galleryMiddleWidgets;
+class GalleryMiddleWidgets;
 
-class imageViewerWidget:public baseWidget
+/**
+ * one of three stacked widgets.
+ * it show the all specific image detail and provide some other image operation.
+ */
+class ImageViewerWidget:public BaseWidget
 {
     Q_OBJECT
 public:
-    imageViewerWidget(QWidget *parent = 0);
+    ImageViewerWidget(QWidget *parent = 0);
 
     void updateRes(QString imagePath,QImage image);
 private:
     void initLayout();
     void initConnection();
 private:
-    galleryMiddleWidgets *m_middleWidgets;
+    GalleryMiddleWidgets *m_middleWidgets;
 
     QMap<QString,QImage> m_imagesRes;
     QString m_imagePath;
     QImage m_image;
 
-    // imageViewer: 对图片进行显示与操作
+    // ImageViewer: display and operate the image
     ImageViewer *m_imageViewer;
     ImageControler *m_imageControler;
 

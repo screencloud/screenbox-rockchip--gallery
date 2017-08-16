@@ -4,10 +4,8 @@
 
 #ifdef DEVICE_EVB
 int controler_button_width = 110;
-
 #else
 int controler_button_width = 60;
-
 #endif
 
 

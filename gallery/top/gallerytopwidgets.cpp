@@ -1,32 +1,32 @@
 #include "gallerytopwidgets.h"
-#include <QLabel>
-#include <QHBoxLayout>
-
 #include "global_value.h"
 
-galleryTopWidgets::galleryTopWidgets(QWidget *parent):baseWidget(parent)
+#include <QHBoxLayout>
+
+GalleryTopWidgets::GalleryTopWidgets(QWidget *parent):BaseWidget(parent)
 {
-    setObjectName("galleryTopWidgets");
-    setStyleSheet("#galleryTopWidgets{background:rgb(56,58,66)}");
-    initWidget();
+    // Set background color.
+    setObjectName("GalleryTopWidgets");
+    setStyleSheet("#GalleryTopWidgets{background:rgb(56,58,66)}");
+
+    initLayout();
 }
 
-void galleryTopWidgets::initWidget()
+void GalleryTopWidgets::initLayout()
 {
-    setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed); // 竖排固定
     QHBoxLayout *hmainyout=new QHBoxLayout;
 
     m_btnreturn=new FourStateButton(return_resource_str,this);
     m_btnreturn->setFixedSize(return_icon_width,return_icon_height);
 
-    m_btnicon=new flatButton(this);
+    m_btnicon=new FlatButton(this);
     m_btnicon->setFixedSize(top_icon_size,top_icon_size);
     m_btnicon->setStyleSheet("QPushButton{background:transparent;border-image:url(:/image/gallery/gallery_top_icon.png)}");
 
-    m_btnexit=new flatButton(this);
-    m_btnmini=new flatButton(this);
-    m_btnmobile=new flatButton(this);
-    m_btnsetting=new flatButton(this);
+    m_btnexit=new FlatButton(this);
+    m_btnmini=new FlatButton(this);
+    m_btnmobile=new FlatButton(this);
+    m_btnsetting=new FlatButton(this);
 
     m_btnexit->setFixedSize(18,18);
     m_btnmini->setFixedSize(16,16);
@@ -56,13 +56,11 @@ void galleryTopWidgets::initWidget()
     m_titleLabel->setFont(font);
     m_titleLabel->setAlignment(Qt::AlignCenter);
 
-    //lyout1
     QHBoxLayout *lyout1 = new QHBoxLayout;
     lyout1->addWidget(m_btnreturn);
     lyout1->addSpacing(30);
     lyout1->addWidget(m_btnicon);
 
-    //lyout2
     QHBoxLayout *lyout2 = new QHBoxLayout;
     lyout2->addWidget(label1);
     lyout2->addWidget(m_btnmobile);
@@ -82,4 +80,13 @@ void galleryTopWidgets::initWidget()
     m_btnsetting->setVisible(false);
     m_btnmini->setVisible(false);
     m_btnexit->setVisible(false);
+}
+
+void GalleryTopWidgets::updateTopTitle(QString title)
+{
+    m_titleLabel->setText(title);
+}
+
+GalleryTopWidgets::~GalleryTopWidgets()
+{
 }

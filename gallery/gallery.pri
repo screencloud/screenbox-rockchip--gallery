@@ -1,11 +1,11 @@
+INCLUDEPATH +=$$PWD top
+include(top/top.pri)
+
+INCLUDEPATH +=$$PWD middle
+include(middle/middle.pri)
+
 HEADERS += \
     $$PWD/gallerywidgets.h \
-    $$PWD/gallerytopwidgets.h
 
 SOURCES += \
     $$PWD/gallerywidgets.cpp \
-    $$PWD/gallerytopwidgets.cpp
-
-INCLUDEPATH +=$$PWD middleWidget
-include(middleWidget/middleWidget.pri)
-

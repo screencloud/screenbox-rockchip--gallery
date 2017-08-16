@@ -10,34 +10,45 @@
 #include <QListWidget>
 #include <QFileInfoList>
 
+class ThumbImageWidget;
+class ImageViewerWidget;
 
-class thumbImageWidget;
-class imageViewerWidget;
-
-class galleryMiddleWidgets:public baseWidget
+/**
+ * The middle part of application.
+ *
+ * There is three stacked widget on it and it will change show state
+ * by images state.
+ * The three stacked widgets are: viewer、empty、thumb
+ */
+class GalleryMiddleWidgets:public BaseWidget
 {
     Q_OBJECT
 public:
-    galleryMiddleWidgets(QWidget *parent);
+    GalleryMiddleWidgets(QWidget *parent);
+
     QMap<QString,QImage> getImageResFromPath(const QString& path = QString(""));
     void updateResUi(QMap<QString,QImage> imageRes);
     bool isViewerMode(){return m_stackedMainLyout->currentWidget() == (QWidget*)m_viewerWid;}
     void leaveViewerMode();
+    void addRefreshSuffix(QString suffix);
 private:
-    galleryMiddleWidgets *m_middleWidgets;
+    GalleryMiddleWidgets *m_middleWidgets;
     QFileInfoList m_imagesInfoList;
-
     QMap<QString,QImage> m_imagesRes;
 
-    QStackedLayout *m_stackedMainLyout;  // the middle page's main layout
-    emptyImagesWidget *m_emptyImgWid;
-    thumbImageWidget *m_thumbImgWid;
-    imageViewerWidget *m_viewerWid;
+    // Main stacked layout
+    QStackedLayout *m_stackedMainLyout;
+    EmptyImagesWidget *m_emptyImgWid;
+    ThumbImageWidget *m_thumbImgWid;
+    ImageViewerWidget *m_viewerWid;
 
-private:
+    // List of search suffix when refresh image resource.
+    QList<QString> m_refreshSuffixList;
+
     void initLayout();
     void initConnection();
-
+    void initData();
+    QFileInfoList findImgFiles(const QString& path);
 signals:
     void imagesResChanged(QMap<QString,QImage>);
     void imageEmpty();

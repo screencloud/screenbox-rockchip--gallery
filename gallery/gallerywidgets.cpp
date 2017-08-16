@@ -1,36 +1,19 @@
 #include "gallerywidgets.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QTextCodec>
-#include <QApplication>
 
-#include "global_value.h"
-
-
-galleryWidgets::galleryWidgets(QWidget *parent,MainWindow *mainWid):baseWidget(parent)
+GalleryWidgets::GalleryWidgets(QWidget *parent):BaseWidget(parent)
 {
     setStyleSheet("QLabel{color:white;}");
-    m_mainWid = mainWid ;
+
     initLayout();
-    init();
+    initConnection();
 }
 
-
-void galleryWidgets::init()
-{
-    connect(m_topWid->m_btnreturn,SIGNAL(clicked(bool)),this,SLOT(slot_return()));
-    connect(m_middleWid,SIGNAL(viewerResChanged(QString)),this,SLOT(slot_onViewerResChanged(QString)));
-}
-
-void galleryWidgets::initLayout()
+void GalleryWidgets::initLayout()
 {
     QVBoxLayout *vmainlyout = new QVBoxLayout;
 
-    // the top widget of gallery page
-    m_topWid = new galleryTopWidgets(this);
-    // the middle widget of gallery page
-    m_middleWid = new galleryMiddleWidgets(this);
-
+    m_topWid = new GalleryTopWidgets(this);
+    m_middleWid = new GalleryMiddleWidgets(this);
 
     vmainlyout->addWidget(m_topWid);
     vmainlyout->addWidget(m_middleWid);
@@ -40,29 +23,36 @@ void galleryWidgets::initLayout()
     setLayout(vmainlyout);
 }
 
-void galleryWidgets::slot_return()
+void GalleryWidgets::initConnection()
+{
+    connect(m_topWid->getReturenButton(),SIGNAL(clicked(bool)),this,SLOT(slot_onReturnClicked()));
+    connect(m_middleWid,SIGNAL(viewerResChanged(QString)),this,SLOT(slot_onViewerResChanged(QString)));
+}
+
+void GalleryWidgets::slot_onReturnClicked()
 {
     if(m_middleWid->isViewerMode()){
         m_middleWid->leaveViewerMode();
         m_topWid->updateTopTitle(str_top_title);
     }else{
-        m_mainWid->slot_returnanimation();
+        mainWindow->close();
     }
 }
 
-void galleryWidgets::slot_onViewerResChanged(QString imagePath)
+void GalleryWidgets::slot_onViewerResChanged(QString imagePath)
 {
-    if(imagePath == "")
-    {
+    if(imagePath == ""){
         m_topWid->updateTopTitle(str_top_title);
-    }
-    else
-    {
+    }else{
         QFileInfo *info = new QFileInfo(imagePath);
         if(info->exists())
         {
             m_topWid->updateTopTitle(info->fileName());
         }
     }
+}
+
+GalleryWidgets::~GalleryWidgets()
+{
 }
 

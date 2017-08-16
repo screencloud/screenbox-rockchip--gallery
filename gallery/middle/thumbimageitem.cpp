@@ -1,6 +1,6 @@
 #include "thumbimageitem.h"
 
-thumbImageItem::thumbImageItem(QString imagePath,QImage image):QWidget()
+ThumbImageItem::ThumbImageItem(QString imagePath,QImage image):QWidget()
   ,isChecked(false),toUpdate(false)
 {
     m_imagePath = imagePath;
@@ -10,14 +10,14 @@ thumbImageItem::thumbImageItem(QString imagePath,QImage image):QWidget()
     imageMapper = new brightnessMapper;
 }
 
-void thumbImageItem::initLayout()
+void ThumbImageItem::initLayout()
 {
     m_stackedLayout = new QStackedLayout();
 
-    // image widget
+    // Image widget
     thumbImage = new QLabel(this);
 
-    // checkbox layout
+    // Checkbox layout
     QVBoxLayout *m_statusLayout = new QVBoxLayout;
 
     m_checkImage = new QLabel(this);
@@ -38,13 +38,13 @@ void thumbImageItem::initLayout()
     setLayout(m_stackedLayout);
 }
 
-void thumbImageItem::resizeEvent(QResizeEvent *)
+void ThumbImageItem::resizeEvent(QResizeEvent *)
 {
     thumbImage->setPixmap(QPixmap::fromImage(m_image).scaled(width(),height()));
 }
 
 
-void thumbImageItem::paintEvent(QPaintEvent *)
+void ThumbImageItem::paintEvent(QPaintEvent *)
 {
     if(toUpdate)
     {
@@ -62,7 +62,7 @@ void thumbImageItem::paintEvent(QPaintEvent *)
 }
 
 
-void thumbImageItem::onItemClick()
+void ThumbImageItem::onItemClick()
 {
     if(isChecked)
     {
