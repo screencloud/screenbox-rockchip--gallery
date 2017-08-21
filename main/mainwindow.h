@@ -37,11 +37,11 @@ public slots:
     void slot_setUpdateFlag();
     void slot_updateMedia();
 
-    void slot_updateUiByRes(QMap<QString,QImage> imageRes);
+    void slot_handleSearchResult(QFileInfoList fileInfoList);
     void slot_standby();
 signals:
     void beginUpdateMediaResource();
-    void updateUiByRes(QMap<QString,QImage> imageRes);
+    void searchResultAvailable(QFileInfoList fileInfoList);
 };
 
 class MediaUpdateThread:public QThread

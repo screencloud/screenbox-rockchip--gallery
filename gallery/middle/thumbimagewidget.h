@@ -40,12 +40,11 @@ private:
 
     QListWidget *m_imageListWid;
 
-    QMap<QString,QImage> m_imagesRes;
     QList<ThumbImageItem*> m_selectedItems;
 signals:
-    void imagesResChanged(QMap<QString,QImage>);
+    void imagesResChanged();
 private slots:
-    void slot_onImagesResChanged(QMap<QString,QImage>);
+    void slot_onImagesResChanged();
     void slot_onListItemClick(QListWidgetItem*);
     void slot_changeImageMode();
     void slot_updateImages();

@@ -103,7 +103,7 @@ void ThumbImageWidget::initLayout()
 
 void ThumbImageWidget::initConnection()
 {
-    connect(this,SIGNAL(imagesResChanged(QMap<QString,QImage>)),this,SLOT(slot_onImagesResChanged(QMap<QString,QImage>)));
+    connect(this,SIGNAL(imagesResChanged()),this,SLOT(slot_onImagesResChanged()));
     connect(m_btnMode,SIGNAL(clicked(bool)),this,SLOT(slot_changeImageMode()));
     connect(m_btnUpdate,SIGNAL(clicked(bool)),this,SLOT(slot_updateImages()));
     connect(m_imageListWid,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(slot_onListItemClick(QListWidgetItem*)));
@@ -123,17 +123,16 @@ void ThumbImageWidget::updateTipText()
     }
 }
 
-void ThumbImageWidget::slot_onImagesResChanged(QMap<QString,QImage> imagesRes)
+void ThumbImageWidget::slot_onImagesResChanged()
 {
-    m_imagesRes.clear();
+    QMap<QString,QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
     m_imageListWid->clear();
-    if(editMode)
-    {
+
+    if(editMode){
         slot_changeImageMode();
     }
-    m_imagesRes = imagesRes;
 
-    QMap<QString,QImage>::Iterator  it = imagesRes.begin();
+    QMap<QString,QImage*>::Iterator it = imagesRes.begin();
     while(it!=imagesRes.end())
     {
         QListWidgetItem *litsItem = new QListWidgetItem(/*QIcon(QPixmap::fromImage(m_images.at(i)).scaled(130,130)),NULL*/);
@@ -174,10 +173,8 @@ void ThumbImageWidget::slot_onListItemClick(QListWidgetItem *listItem)
 
 void ThumbImageWidget::slot_changeImageMode()
 {
-    if(editMode)
-    {
-        for(int i=0;i<m_selectedItems.size();i++)
-        {
+    if(editMode){
+        for(int i=0;i<m_selectedItems.size();i++){
             m_selectedItems.at(i)->onItemClick();
         }
         m_selectedItems.clear();
@@ -185,9 +182,7 @@ void ThumbImageWidget::slot_changeImageMode()
         m_btnUpdate->setText(str_button_refresh_image);
         m_btnMode->setText(str_button_edit_image);
         updateTipText();
-    }
-    else
-    {
+    }else{
         editMode = true;
         m_btnUpdate->setText(str_button_delete_image);
         m_btnMode->setText(str_button_edit_image_cancel);
@@ -199,17 +194,15 @@ void ThumbImageWidget::slot_updateImages()
 {
     if(m_selectedItems.size()>0&&editMode){
         int result = CMessageBox::showCMessageBox(this,str_question_delete_image,str_button_delete,str_button_cancel);
-        if(result == RESULT_CONFIRM)
-        {
+        if(result == RESULT_CONFIRM){
             // Delete images selected
-            for(int i=0;i<m_selectedItems.size();i++)
-            {
+            for(int i=0;i<m_selectedItems.size();i++){
                 ThumbImageItem *imageItem = m_selectedItems.at(i);
                 if(QFile::remove(imageItem->getImagePath())){
-                    m_imagesRes.remove(imageItem->getImagePath());
+                    mainWindow->getGalleryWidget()->removeImage(imageItem->getImagePath());
                 }
             }
-            emit m_middleWidgets->imagesResChanged(m_imagesRes);
+            emit m_middleWidgets->imagesResChanged();
         }
     }else{
         bool isConfirm;
@@ -220,7 +213,7 @@ void ThumbImageWidget::slot_updateImages()
                                                      &isConfirm);
         if(isConfirm){
             if(!appendSuffix.isEmpty()){
-                m_middleWidgets->addRefreshSuffix(appendSuffix);
+                mainWindow->getGalleryWidget()->addRefreshSuffix(appendSuffix);
             }
             mainWindow->slot_updateMedia();
         }

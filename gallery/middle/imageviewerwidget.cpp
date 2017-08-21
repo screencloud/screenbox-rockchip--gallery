@@ -44,7 +44,7 @@ void ImageViewerWidget::initLayout()
 
 void ImageViewerWidget::initConnection()
 {
-    connect(this,SIGNAL(imagesResChanged(QMap<QString,QImage>,bool)),this,SLOT(slot_onImagesResChanged(QMap<QString,QImage>,bool)));
+    connect(this,SIGNAL(imagesResChanged(bool)),this,SLOT(slot_onImagesResChanged(bool)));
 
     connect(m_imageControler->m_btnLast,SIGNAL(clicked(bool)),this,SLOT(slot_lastImage()));
     connect(m_imageControler->m_btnNext,SIGNAL(clicked(bool)),this,SLOT(slot_nextImage()));
@@ -55,35 +55,38 @@ void ImageViewerWidget::initConnection()
     connect(m_imageControler->m_btnDetail,SIGNAL(clicked(bool)),this,SLOT(slot_viewDetail()));
 }
 
-void ImageViewerWidget::updateRes(QString imagePath, QImage image)
+void ImageViewerWidget::updateRes(QString imagePath, QImage *image)
 {
-    m_imageViewer->setPixmap(QPixmap::fromImage(image));
+    if(imagePath.endsWith(QString("gif"),Qt::CaseInsensitive)){
+        m_imageViewer->setMoviePath(imagePath);
+    }else{
+        m_imageViewer->setPixmap(QPixmap::fromImage(*image));
+    }
     m_imagePath = imagePath;
-    m_image = image;
     emit m_middleWidgets->viewerResChanged(imagePath);
 }
 
-void ImageViewerWidget::slot_onImagesResChanged(QMap<QString,QImage> imagesRes,bool update)
+void ImageViewerWidget::slot_onImagesResChanged(bool update)
 {
-    m_imagesRes = imagesRes;
-    if(!m_imagesRes.keys().contains(m_imagePath)&&update)
+    QMap<QString,QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
+    if(!imagesRes.keys().contains(m_imagePath)&&update)
     {
-        QMap<QString,QImage>::Iterator  it = m_imagesRes.begin();
+        QMap<QString,QImage*>::Iterator it = imagesRes.begin();
         updateRes(it.key(),it.value());
     }
 }
 
-void ImageViewerWidget::slot_lastImage()
-{
-    QMap<QString,QImage>::Iterator  it = m_imagesRes.begin();
-    while(it != m_imagesRes.end())
+void ImageViewerWidget::slot_lastImage(){
+    QMap<QString,QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
+    QMap<QString,QImage*>::Iterator it = imagesRes.begin();
+    while(it != imagesRes.end())
     {
         if(it.key() == m_imagePath)
         {
-            if(it != m_imagesRes.begin()){
+            if(it != imagesRes.begin()){
                 --it;
             }else{
-                it = m_imagesRes.end()-1;
+                it = imagesRes.end()-1;
             }
             updateRes(it.key(),it.value());
             break;
@@ -94,15 +97,16 @@ void ImageViewerWidget::slot_lastImage()
 
 void ImageViewerWidget::slot_nextImage()
 {
-    QMap<QString,QImage>::Iterator  it = m_imagesRes.begin();
-    while(it!=m_imagesRes.end())
+    QMap<QString,QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
+    QMap<QString,QImage*>::Iterator  it = imagesRes.begin();
+    while(it!=imagesRes.end())
     {
         if(it.key() == m_imagePath)
         {
-            if(it != (m_imagesRes.end()-1)){
+            if(it != (imagesRes.end()-1)){
                 ++it;
             }else{
-                it = m_imagesRes.begin();
+                it = imagesRes.begin();
             }
             updateRes(it.key(),it.value());
             break;
@@ -123,16 +127,14 @@ void ImageViewerWidget::slot_viewDetail()
 void ImageViewerWidget::slot_deleteImage()
 {
     QFileInfo *info = new QFileInfo(m_imagePath);
-    if(info->exists())
-    {
+    if(info->exists()){
         int result = CMessageBox::showCMessageBox(this,str_question_delete_image,str_button_delete,str_button_cancel);
-        if(result == ChosseResult::RESULT_CONFIRM)
-        {
+        if(result == ChosseResult::RESULT_CONFIRM){
             if(QFile::remove(m_imagePath)){
                 QString removePath = m_imagePath;
                 slot_nextImage();
-                m_imagesRes.remove(removePath);
-                m_middleWidgets->imagesResChanged(m_imagesRes);
+                mainWindow->getGalleryWidget()->removeImage(removePath);
+                m_middleWidgets->imagesResChanged();
             }
         }
     }

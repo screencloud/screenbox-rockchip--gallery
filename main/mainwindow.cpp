@@ -27,7 +27,7 @@ void MainWindow::initLayout(){
 void MainWindow::initConnection()
 {
     connect(this,SIGNAL(beginUpdateMediaResource()),this,SLOT(slot_setUpdateFlag()));
-    connect(this,SIGNAL(updateUiByRes(QMap<QString,QImage>)),this,SLOT(slot_updateUiByRes(QMap<QString,QImage>)));
+    connect(this,SIGNAL(searchResultAvailable(QFileInfoList)),this,SLOT(slot_handleSearchResult(QFileInfoList)));
 }
 
 void MainWindow::slot_setUpdateFlag()
@@ -46,15 +46,15 @@ void MainWindow::slot_setUpdateFlag()
 
 void MainWindow::slot_updateMedia()
 {
+    qDebug("Update image resource.");
     MediaUpdateThread *thread = new MediaUpdateThread(this,this);
     thread->start();
     mediaHasUpdate =false;
 }
 
-void MainWindow::slot_updateUiByRes(QMap<QString,QImage> imageRes)
+void MainWindow::slot_handleSearchResult(QFileInfoList fileInfoList)
 {
-    m_galleryWid->getMiddleWidget()->updateResUi(imageRes);
-
+    m_galleryWid->processFileList(fileInfoList);
 }
 
 GalleryWidgets* MainWindow::getGalleryWidget()
@@ -84,13 +84,12 @@ MediaUpdateThread::MediaUpdateThread(QObject *parent,MainWindow *mainWindow):QTh
 {
     m_mainWindow = mainWindow;
     qRegisterMetaType<QFileInfoList>("QFileInfoList");
-    qRegisterMetaType<QMap<QString,QImage>>("QMap<QString,QImage>");
 }
 
 void MediaUpdateThread::run()
 {
-    QMap<QString,QImage> imageRes = m_mainWindow->getGalleryWidget()->getMiddleWidget()->getImageResFromPath(GALLERY_SEARCH_PATH);
-    emit m_mainWindow->updateUiByRes(imageRes);
+    QFileInfoList fileInfoList = m_mainWindow->getGalleryWidget()->findImgFiles(GALLERY_SEARCH_PATH);
+    emit m_mainWindow->searchResultAvailable(fileInfoList);
 }
 
 MainWindow::~MainWindow()

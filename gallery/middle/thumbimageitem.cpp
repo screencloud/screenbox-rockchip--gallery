@@ -1,6 +1,6 @@
 #include "thumbimageitem.h"
 
-ThumbImageItem::ThumbImageItem(QString imagePath,QImage image):QWidget()
+ThumbImageItem::ThumbImageItem(QString imagePath,QImage *image):QWidget()
   ,isChecked(false),toUpdate(false)
 {
     m_imagePath = imagePath;
@@ -40,22 +40,18 @@ void ThumbImageItem::initLayout()
 
 void ThumbImageItem::resizeEvent(QResizeEvent *)
 {
-    thumbImage->setPixmap(QPixmap::fromImage(m_image).scaled(width(),height()));
+    thumbImage->setPixmap(QPixmap::fromImage(*m_image).scaled(width(),height()));
 }
 
 
 void ThumbImageItem::paintEvent(QPaintEvent *)
 {
-    if(toUpdate)
-    {
-        if(isChecked)
-        {
+    if(toUpdate){
+        if(isChecked){
             imageMapper->updateBCG(0.5,1,1);
-            thumbImage->setPixmap(QPixmap::fromImage(imageMapper->apply(m_image)).scaled(width(),height()));
-        }
-        else
-        {
-             thumbImage->setPixmap(QPixmap::fromImage(m_image).scaled(width(),height()));
+            thumbImage->setPixmap(QPixmap::fromImage(imageMapper->apply(*m_image)).scaled(width(),height()));
+        }else{
+             thumbImage->setPixmap(QPixmap::fromImage(*m_image).scaled(width(),height()));
         }
         toUpdate = false;
     }
@@ -64,13 +60,10 @@ void ThumbImageItem::paintEvent(QPaintEvent *)
 
 void ThumbImageItem::onItemClick()
 {
-    if(isChecked)
-    {
+    if(isChecked){
         m_stackedLayout->setCurrentIndex(0);
         isChecked = false;
-    }
-    else
-    {
+    }else{
         m_stackedLayout->setCurrentIndex(1);
         isChecked = true;
     }

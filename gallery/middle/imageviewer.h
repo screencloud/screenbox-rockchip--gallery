@@ -1,7 +1,7 @@
 #ifndef IMAGEBROWSER_IMAGEHANDLER_H
 #define IMAGEBROWSER_IMAGEHANDLER_H
 
-#include <QWidget>
+#include <QLabel>
 #include <QPixmap>
 #include <QPainter>
 #include <QPaintEvent>
@@ -9,13 +9,17 @@
 #include <QResizeEvent>
 #include <QGestureEvent>
 #include <QPinchGesture>
+#include <QMovie>
 
-class ImageViewer : public QWidget
+class ImageViewer : public QLabel
 {
     Q_OBJECT
 public:
     explicit ImageViewer(QWidget *parent = 0);
+    ~ImageViewer();
+
     void setPixmap(const QPixmap &pixmap);
+    void setMoviePath(QString filePath);
 
     void showOriginalSize();
     void showSuitableSize();
@@ -26,7 +30,6 @@ public:
 
 private:
     void ariseScale(int rate);
-
 signals:
     void percentageChanged(double percentage);
     void rightButtonClicked();
@@ -44,14 +47,14 @@ signals:
 public slots:
 
 private:
+    bool gifShow;
     QPixmap m_pixmap;
+    QMovie *m_movie;
 
-    //缩放
-    double m_scale;             //缩放比例
-    double m_percentage;          //缩放百分比
+    double m_scale;
+    double m_percentage;
 
-    //移动
-    QPoint m_pressPoint;                //鼠标按下点的坐标
+    QPoint m_pressPoint;
     double m_originX;
     double m_originY;
     double m_basicX;

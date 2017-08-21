@@ -6,7 +6,7 @@
 #include <QCursor>
 #include <QDebug>
 
-ImageViewer::ImageViewer(QWidget *parent) : QWidget(parent)
+ImageViewer::ImageViewer(QWidget *parent) : QLabel(parent)
   ,m_scale(0.0)
   ,m_percentage(0.0)
   ,m_originX(0.0), m_originY(0.0)
@@ -15,13 +15,31 @@ ImageViewer::ImageViewer(QWidget *parent) : QWidget(parent)
 {
     setAttribute(Qt::WA_AcceptTouchEvents);
     this->grabGesture(Qt::PinchGesture);
+
+    m_movie = new QMovie();
+    this->setAlignment(Qt::AlignCenter);
+}
+
+ImageViewer::~ImageViewer()
+{
+    delete m_movie;
 }
 
 void ImageViewer::setPixmap(const QPixmap &pixmap)
 {
     m_pixmap = pixmap;
-
     showSuitableSize();
+    gifShow = false;
+}
+
+void ImageViewer::setMoviePath(QString filePath)
+{
+    m_movie->stop();
+    m_movie->setFileName(filePath);
+    this->setMovie(m_movie);
+    m_movie->start();
+    gifShow = true;
+    update();
 }
 
 void ImageViewer::ariseScale(int rate)
@@ -61,7 +79,6 @@ void ImageViewer::showSuitableSize()
     double showwidth = static_cast<double>(width());
     double showheight = static_cast<double>(height());
 
-    //缩放比例
     double Wpercentage = showwidth / pixwidth;
     double Hpercentage = showheight / pixheight;
     m_percentage = qMin(Wpercentage, Hpercentage);
@@ -77,7 +94,6 @@ void ImageViewer::showSuitableSize()
     }
     m_scale = 1.0;
 
-    //图片初始位置（用于移动）
     m_basicX = showwidth/2.0 - pixwidth*m_percentage/2.0;
     m_originX = m_basicX;
     m_basicY = showheight/2.0- pixheight*m_percentage/2.0;
@@ -117,45 +133,49 @@ void ImageViewer::anticlockwise90()
 
 void ImageViewer::paintEvent(QPaintEvent *event)
 {
-    Q_UNUSED(event);
+    if(gifShow){
+        QLabel::paintEvent(event);
+    }else{
+        Q_UNUSED(event);
 
-    double pixwidth = static_cast<double>(m_pixmap.width());
-    double pixheight = static_cast<double>(m_pixmap.height());
-    double showwidth = static_cast<double>(width());
-    double showheight = static_cast<double>(height());
+        double pixwidth = static_cast<double>(m_pixmap.width());
+        double pixheight = static_cast<double>(m_pixmap.height());
+        double showwidth = static_cast<double>(width());
+        double showheight = static_cast<double>(height());
 
-    double Wscalerate = pixwidth / showwidth;
-    double Hscalerate = pixheight / showheight;
-    double compare = qMax(Wscalerate, Hscalerate);
+        double Wscalerate = pixwidth / showwidth;
+        double Hscalerate = pixheight / showheight;
+        double compare = qMax(Wscalerate, Hscalerate);
 
-    if( compare < 1.0 )
-        compare = 1.0;
+        if( compare < 1.0 )
+            compare = 1.0;
 
-    QPainter painter(this);
-    //Draw background
-    painter.save();
-    QRect backgroundRect = rect();
-    QColor color(0, 0, 0);
-    painter.setPen(color);
-    painter.setBrush(QBrush(color));
-    painter.drawRect(backgroundRect);
-    painter.restore();
+        QPainter painter(this);
+        //Draw background
+        painter.save();
+        QRect backgroundRect = rect();
+        QColor color(0, 0, 0);
+        painter.setPen(color);
+        painter.setBrush(QBrush(color));
+        painter.drawRect(backgroundRect);
+        painter.restore();
 
-    //Draw Image
-    QRect showRect = QRect( m_originX, m_originY, pixwidth/compare, pixheight/compare);
-    painter.save();
-    painter.translate(showwidth/2.0, (showheight/2.0));
-    painter.scale(m_scale, m_scale);
-    painter.translate(-(showwidth/2.0), -(showheight/2.0));
-    painter.drawPixmap(showRect, m_pixmap);
-    painter.restore();
+        //Draw Image
+        QRect showRect = QRect(m_originX, m_originY, pixwidth/compare, pixheight/compare);
+        painter.save();
+        painter.translate(showwidth/2.0, (showheight/2.0));
+        painter.scale(m_scale, m_scale);
+        painter.translate(-(showwidth/2.0), -(showheight/2.0));
+        painter.drawPixmap(showRect, m_pixmap);
+        painter.restore();
+    }
 }
 
 void ImageViewer::wheelEvent(QWheelEvent *event)
 {
     QWidget::wheelEvent(event);
-    int numDegrees = event->delta() / 8;    //滚动的角度，*8就是鼠标滚动的距离
-    int numSteps = numDegrees / 15;         //滚动的步数，*15就是鼠标滚动的角度
+    int numDegrees = event->delta() / 8;
+    int numSteps = numDegrees / 15;
     if (event->orientation() == Qt::Horizontal) {
         event->accept();
     } else {
@@ -192,7 +212,6 @@ void ImageViewer::mouseMoveEvent(QMouseEvent *event)
 {
     if(m_pressPoint != QPoint(-1,-1))
     {
-        //鼠标相对于屏幕的位置
         QPoint move_pos = event->pos();
 
         if( rect().contains(event->pos()) )

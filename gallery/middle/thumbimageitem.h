@@ -12,10 +12,10 @@
 class ThumbImageItem:public QWidget
 {
 public:
-    ThumbImageItem(QString imagePath,QImage image);
+    ThumbImageItem(QString imagePath,QImage *image);
 
     void onItemClick();
-    QImage getImage(){return m_image;}
+    QImage* getImage(){return m_image;}
     QString getImagePath(){return m_imagePath;}
     bool getCheckState(){return isChecked;}
 private:
@@ -29,7 +29,7 @@ private:
 
     QLabel *thumbImage;
     QLabel *m_checkImage;
-    QImage m_image;
+    QImage *m_image;
     QString m_imagePath;
 protected:
     void resizeEvent(QResizeEvent *event);
