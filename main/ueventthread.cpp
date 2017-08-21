@@ -52,20 +52,23 @@ static int open_luther_gliethttp_socket(void)
     struct sockaddr_nl addr;
     int sz = 64*1024;
     int s;
+    int val = 1;
 
     memset(&addr, 0, sizeof(addr));
     addr.nl_family = AF_NETLINK;
-    addr.nl_pid = getpid();
-    addr.nl_groups = 0xffffffff;
+    addr.nl_pid = 0;
+    addr.nl_groups = NETLINK_KOBJECT_UEVENT;
 
     s = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_KOBJECT_UEVENT);
     if (s < 0)
         return -1;
 
     setsockopt(s, SOL_SOCKET, SO_RCVBUFFORCE, &sz, sizeof(sz));
+    setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void *)&val, sizeof(int));
 
     if (bind(s, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
-        close(s);
+        qDebug("bind error:%s\n", strerror(errno));
+	close(s);
         return -1;
     }
 
