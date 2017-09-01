@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QMouseEvent>
+#include "ueventthread.h"
 
 enum CursorPos{Default,Right,Left,Bottom,Top,TopRight,TopLeft,BottomRight,BottomLeft};
 struct pressWindowsState
@@ -20,15 +21,18 @@ class AbsFrameLessAutoSize : public QWidget
 public:
     AbsFrameLessAutoSize(QWidget *parent = 0);
     ~AbsFrameLessAutoSize(){}
+    void stopUeventLoop();
     inline void setBorder(int border);
     void mouseMoveRect(const QPoint &p);
 protected:
+
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent *event);
     pressWindowsState m_state;
     int m_border;
     CursorPos m_curPos;
+    UeventThread *thread;
 };
 
 #endif // ABSFRAMELESSAUTOSIZE_H

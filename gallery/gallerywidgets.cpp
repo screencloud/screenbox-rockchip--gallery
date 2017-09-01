@@ -96,6 +96,7 @@ void GalleryWidgets::addRefreshSuffix(QString suffix)
 
 void GalleryWidgets::slot_onReturnClicked()
 {
+    mainWindow->stopUeventLoop();
     if(m_middleWid->isViewerMode()){
         m_middleWid->leaveViewerMode();
         m_topWid->updateTopTitle(str_top_title);
