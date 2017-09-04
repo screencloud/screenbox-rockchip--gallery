@@ -10,20 +10,15 @@ class GalleryTopWidgets:public BaseWidget
 {
 public:
     GalleryTopWidgets(QWidget *parent);
-    ~GalleryTopWidgets();
+    ~GalleryTopWidgets(){}
 
     void updateTopTitle(QString title);
-    FourStateButton* getReturenButton(){return m_btnreturn;}
+    FourStateButton* getReturenButton(){return m_btnReturn;}
 private:
-    FourStateButton *m_btnreturn;
-    FlatButton *m_btnicon;
-    FlatButton *m_btnmobile;
-    FlatButton *m_btnsetting;
-    FlatButton *m_btnmini;
-    FlatButton *m_btnexit;
-
+    FourStateButton *m_btnReturn;
+    FlatButton *m_btnIcon;
     QLabel *m_titleLabel;
-private:
+
     void initLayout();
 };
 #endif // GALLERYTOPWIDGETS_H

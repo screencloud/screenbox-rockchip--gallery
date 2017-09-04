@@ -12,6 +12,8 @@ GalleryWidgets::GalleryWidgets(QWidget *parent):BaseWidget(parent)
 }
 
 void GalleryWidgets::initData(){
+    m_loadImageThread = new LoadImageThread(this,this);
+
     m_refreshSuffixList.append("jpg");
     m_refreshSuffixList.append("png");
     m_refreshSuffixList.append("bmp");
@@ -66,8 +68,8 @@ QFileInfoList GalleryWidgets::findImgFiles(const QString& path)
 
 void GalleryWidgets::processFileList(QFileInfoList fileInfoList)
 {
-    LoadImageThread *thread = new LoadImageThread(this,this,fileInfoList);
-    thread->start();
+    m_loadImageThread->setFileInfoList(fileInfoList);
+    m_loadImageThread->start();
 }
 
 void GalleryWidgets::slot_onImageLoadComplete()
@@ -96,12 +98,16 @@ void GalleryWidgets::addRefreshSuffix(QString suffix)
 
 void GalleryWidgets::slot_onReturnClicked()
 {
-    mainWindow->stopUeventLoop();
+    // Destory load image thread while exit application.
+    if(m_loadImageThread && m_loadImageThread->isRunning()){
+        m_loadImageThread->terminate();
+    }
+
     if(m_middleWid->isViewerMode()){
         m_middleWid->leaveViewerMode();
         m_topWid->updateTopTitle(str_top_title);
     }else{
-        mainWindow->close();
+        mainWindow->onApplicationClose();
     }
 }
 
@@ -118,13 +124,21 @@ void GalleryWidgets::slot_onViewerResChanged(QString imagePath)
     }
 }
 
-LoadImageThread::LoadImageThread(QObject *parent,GalleryWidgets *parentWidget,QFileInfoList fileInfoList):QThread(parent)
+LoadImageThread::LoadImageThread(QObject *parent,GalleryWidgets *parentWidget):QThread(parent)
 {
     m_parent = parentWidget;
-    m_infoList = fileInfoList;
 
     qRegisterMetaType<QFileInfoList>("QFileInfoList");
     qRegisterMetaType<QMap<QString,QImage>>("QMap<QString,QImage*>");
+}
+
+LoadImageThread::~LoadImageThread()
+{
+}
+
+void LoadImageThread::setFileInfoList(QFileInfoList infoList)
+{
+    m_infoList = infoList;
 }
 
 void LoadImageThread::run()
@@ -147,14 +161,14 @@ void LoadImageThread::run()
             }
         }
     }else{
-        for(it = imagesRes.begin();it!=imagesRes.end();it++){      
+        for(it = imagesRes.begin();it!=imagesRes.end();it++){
             delete it.value();
         }
         imagesRes.clear();
     }
 
     // Traverse path list to add item.
-    for(int i = 0;i < filePathList.size();i++){
+    for(int i = 0;i < filePathList.size() && !isInterruptionRequested();i++){
         if(!imagesRes.keys().contains(filePathList.at(i))){
             QImage *tempImage = new QImage();
             if(tempImage->load(filePathList.at(i))){
@@ -171,6 +185,5 @@ void LoadImageThread::run()
 
 GalleryWidgets::~GalleryWidgets()
 {
-
 }
 

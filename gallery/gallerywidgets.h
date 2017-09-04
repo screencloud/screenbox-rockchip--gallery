@@ -6,6 +6,8 @@
 #include "middle/gallerymiddlewidgets.h"
 #include "global_value.h"
 
+class LoadImageThread;
+
 /**
  * The applicatiion contains top and middle widget and
  * each has it's own layout and connection control.
@@ -36,6 +38,8 @@ private:
     GalleryTopWidgets *m_topWid;
     GalleryMiddleWidgets *m_middleWid;
 
+    LoadImageThread *m_loadImageThread;
+
     void initData();
     void initConnection();
     void initLayout();
@@ -53,13 +57,14 @@ signals:
 class LoadImageThread: public QThread
 {
 public:
-    LoadImageThread(QObject *parent,GalleryWidgets *parentWidget,QFileInfoList fileInfoList);
+    LoadImageThread(QObject *parent,GalleryWidgets *parentWidget);
+    ~LoadImageThread();
+
+    void setFileInfoList(QFileInfoList infoList);
 private:
     GalleryWidgets *m_parent;
     QFileInfoList m_infoList;
 protected:
     void run();
 };
-
-
 #endif // GALLERYWIDGETS_H

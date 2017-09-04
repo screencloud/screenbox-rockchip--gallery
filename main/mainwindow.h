@@ -6,6 +6,8 @@
 #include "gallerywidgets.h"
 #include "base/basewindow.h"
 #include "global_value.h"
+#include "ueventthread.h"
+#include "inotifythread.h"
 
 class GalleryWidgets;
 
@@ -18,18 +20,25 @@ class GalleryWidgets;
 class MainWindow : public BaseWindow
 {
     Q_OBJECT
-
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
     GalleryWidgets* getGalleryWidget();
+    void onApplicationClose();
 protected:
     void keyPressEvent(QKeyEvent *event);
+    // Used for disable or enable application when car-reverse event comes.
+    void disableApplication();
+    void enableApplication();
 private:
     bool mediaHasUpdate;
     GalleryWidgets *m_galleryWid;
+    // Thread for media resource update.
+    UeventThread *ueventThread;
+    InotifyThread *inotifyThread;
 
+    void initData();
     void initLayout();
     void initConnection();
 public slots:

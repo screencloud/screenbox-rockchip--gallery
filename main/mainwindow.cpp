@@ -1,15 +1,24 @@
 #include "mainwindow.h"
-#include "inotifythread.h"
 
-MainWindow::MainWindow(QWidget *parent) :BaseWindow(parent)
+MainWindow::MainWindow(QWidget *parent):BaseWindow(parent)
   ,mediaHasUpdate(false)
 {
-    // Initialize global main class of 'MainWindow' for other widgets invokes.
-    mainWindow = this;
-
+    initData();
     initLayout();
     initConnection();
     slot_updateMedia();
+}
+
+void MainWindow::initData()
+{
+    // Initialize global main class of 'MainWindow' for other widgets invokes.
+    mainWindow = this;
+    // Start media source update thread.
+    // Uevent for usb and inotify for file modify.
+    ueventThread = new UeventThread(this);
+    ueventThread->start();
+    inotifyThread = new InotifyThread(this);
+    inotifyThread->start();
 }
 
 void MainWindow::initLayout(){
@@ -34,13 +43,12 @@ void MainWindow::slot_setUpdateFlag()
 {
     /*
      * This operation setted because that inotify event send no more one siganl.
-     * So set a 2 seconds duration to ignore theres no-use siganls.
+     * So set a 500ms duration to ignore theres no-use siganls.
      * Note: it is expected to optimize.
      */
-    if(!mediaHasUpdate)
-    {
+    if(!mediaHasUpdate){
         mediaHasUpdate = true;
-        QTimer::singleShot(2000,this,SLOT(slot_updateMedia()));
+        QTimer::singleShot(500,this,SLOT(slot_updateMedia()));
     }
 }
 
@@ -52,9 +60,26 @@ void MainWindow::slot_updateMedia()
     mediaHasUpdate =false;
 }
 
+void MainWindow::disableApplication()
+{
+    qDebug("disable gallery application");
+    this->setVisible(false);
+}
+
+void MainWindow::enableApplication()
+{
+    qDebug("enable gallery application");
+    this->setVisible(true);
+}
+
 void MainWindow::slot_handleSearchResult(QFileInfoList fileInfoList)
 {
     m_galleryWid->processFileList(fileInfoList);
+}
+
+void MainWindow::onApplicationClose()
+{
+    this->close();
 }
 
 GalleryWidgets* MainWindow::getGalleryWidget()
