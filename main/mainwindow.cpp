@@ -89,7 +89,6 @@ GalleryWidgets* MainWindow::getGalleryWidget()
 
 void MainWindow::slot_standby()
 {
-    system("echo mem > /sys/power/state");
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
