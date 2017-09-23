@@ -61,6 +61,7 @@ public:
     ~LoadImageThread();
 
     void setFileInfoList(QFileInfoList infoList);
+    void stopThread();
 private:
     GalleryWidgets *m_parent;
     QFileInfoList m_infoList;

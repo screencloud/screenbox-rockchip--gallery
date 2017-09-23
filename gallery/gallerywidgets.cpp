@@ -98,9 +98,9 @@ void GalleryWidgets::addRefreshSuffix(QString suffix)
 
 void GalleryWidgets::slot_onReturnClicked()
 {
-    // Destory load image thread while exit application.
+    // Destory load-image thread while exit application.
     if(m_loadImageThread && m_loadImageThread->isRunning()){
-        m_loadImageThread->terminate();
+        m_loadImageThread->stopThread();
     }
 
     if(m_middleWid->isViewerMode()){
@@ -139,6 +139,12 @@ LoadImageThread::~LoadImageThread()
 void LoadImageThread::setFileInfoList(QFileInfoList infoList)
 {
     m_infoList = infoList;
+}
+
+void LoadImageThread::stopThread(){
+    requestInterruption();
+    quit();
+    wait();
 }
 
 void LoadImageThread::run()
