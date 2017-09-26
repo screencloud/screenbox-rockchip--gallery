@@ -60,7 +60,11 @@ void ImageViewerWidget::updateRes(QString imagePath, QImage *image)
     if(imagePath.endsWith(QString("gif"),Qt::CaseInsensitive)){
         m_imageViewer->setMoviePath(imagePath);
     }else{
+        if(m_current_img){
+            delete m_current_img;
+        }
         m_imageViewer->setPixmap(QPixmap::fromImage(*image));
+        m_current_img=image;
     }
     m_imagePath = imagePath;
     emit m_middleWidgets->viewerResChanged(imagePath);
@@ -72,7 +76,7 @@ void ImageViewerWidget::slot_onImagesResChanged(bool update)
     if(!imagesRes.keys().contains(m_imagePath)&&update)
     {
         QMap<QString,QImage*>::Iterator it = imagesRes.begin();
-        updateRes(it.key(),it.value());
+        updateRes(it.key(),new QImage(it.key()));
     }
 }
 
@@ -88,7 +92,7 @@ void ImageViewerWidget::slot_lastImage(){
             }else{
                 it = imagesRes.end()-1;
             }
-            updateRes(it.key(),it.value());
+            updateRes(it.key(),new QImage(it.key()));
             break;
         }
         ++it;
@@ -108,7 +112,7 @@ void ImageViewerWidget::slot_nextImage()
             }else{
                 it = imagesRes.begin();
             }
-            updateRes(it.key(),it.value());
+            updateRes(it.key(),new QImage(it.key()));
             break;
         }
         ++it;
@@ -134,7 +138,8 @@ void ImageViewerWidget::slot_deleteImage()
                 QString removePath = m_imagePath;
                 slot_nextImage();
                 mainWindow->getGalleryWidget()->removeImage(removePath);
-                m_middleWidgets->imagesResChanged();
+                //m_middleWidgets->imagesResChanged();
+                emit m_middleWidgets->sig_imagesResRemove(removePath,NULL);
             }
         }
     }

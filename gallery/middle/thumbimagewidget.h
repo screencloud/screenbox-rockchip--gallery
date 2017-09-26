@@ -41,6 +41,8 @@ private:
     QListWidget *m_imageListWid;
 
     QList<ThumbImageItem*> m_selectedItems;
+
+    QMap<QString,QListWidgetItem*> m_thumbs;
 signals:
     void imagesResChanged();
 private slots:
@@ -48,6 +50,9 @@ private slots:
     void slot_onListItemClick(QListWidgetItem*);
     void slot_changeImageMode();
     void slot_updateImages();
+public:
+    void onImagesResInsert(QString path,QImage* thumb);
+    void onImagesResRemove(QString path,QImage* thumb);
 };
 
 

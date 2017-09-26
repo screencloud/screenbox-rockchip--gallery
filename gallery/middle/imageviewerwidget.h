@@ -30,7 +30,7 @@ private:
     GalleryMiddleWidgets *m_middleWidgets;
 
     QString m_imagePath;
-
+    QImage* m_current_img;
     // ImageViewer: display and operate the image
     ImageViewer *m_imageViewer;
     ImageControler *m_imageControler;

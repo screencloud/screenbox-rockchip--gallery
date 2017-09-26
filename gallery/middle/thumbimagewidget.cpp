@@ -8,6 +8,7 @@
 #include "thumbimageitem.h"
 #include "global_value.h"
 #include "cmessagebox.h"
+#include <QDebug>
 
 #ifdef DEVICE_EVB
 int thumb_image_width = 280;
@@ -26,7 +27,6 @@ int button_height = 40;
 ThumbImageWidget::ThumbImageWidget(QWidget *parent):BaseWidget(parent),editMode(false)
 {
     m_middleWidgets = (GalleryMiddleWidgets*)parent;
-
     initLayout();
     initConnection();
 }
@@ -123,27 +123,37 @@ void ThumbImageWidget::updateTipText()
     }
 }
 
+void ThumbImageWidget::onImagesResInsert(QString path,QImage* thumb){
+    QListWidgetItem *litsItem = new QListWidgetItem(/*QIcon(QPixmap::fromImage(m_images.at(i)).scaled(130,130)),NULL*/);
+    litsItem->setSizeHint(QSize(thumb_image_width,thumb_image_width));
+
+    ThumbImageItem *itemWid = new ThumbImageItem(path,thumb);
+    m_imageListWid ->addItem(litsItem);
+    m_imageListWid->setItemWidget(litsItem,itemWid);
+    m_thumbs.insert(path,litsItem);
+    updateImageCount();
+}
+
+void ThumbImageWidget::onImagesResRemove(QString path,QImage* thumb){
+    QMap<QString,QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
+    if(m_thumbs.keys().contains(path)){
+        QListWidgetItem *litsItem =m_thumbs[path];
+        if(litsItem){
+            m_imageListWid->removeItemWidget(litsItem);
+            delete litsItem;
+        }
+    }
+}
+
 void ThumbImageWidget::slot_onImagesResChanged()
 {
     QMap<QString,QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
-    m_imageListWid->clear();
+
 
     if(editMode){
         slot_changeImageMode();
     }
 
-    QMap<QString,QImage*>::Iterator it = imagesRes.begin();
-    while(it!=imagesRes.end())
-    {
-        QListWidgetItem *litsItem = new QListWidgetItem(/*QIcon(QPixmap::fromImage(m_images.at(i)).scaled(130,130)),NULL*/);
-
-        ThumbImageItem *itemWid = new ThumbImageItem(it.key(),it.value());
-
-        litsItem->setSizeHint(QSize(thumb_image_width,thumb_image_width));
-        m_imageListWid ->addItem(litsItem);
-        m_imageListWid->setItemWidget(litsItem,itemWid);
-        ++it;
-    }
     updateImageCount();
     if(m_imageListWid->count()==0)
     {
@@ -167,7 +177,7 @@ void ThumbImageWidget::slot_onListItemClick(QListWidgetItem *listItem)
     }
     else
     {
-        emit m_middleWidgets->imageItemClick(imageItem->getImagePath(),imageItem->getImage());
+        emit m_middleWidgets->imageItemClick(imageItem->getImagePath(),new QImage(imageItem->getImagePath()));
     }
 }
 
@@ -200,6 +210,7 @@ void ThumbImageWidget::slot_updateImages()
                 ThumbImageItem *imageItem = m_selectedItems.at(i);
                 if(QFile::remove(imageItem->getImagePath())){
                     mainWindow->getGalleryWidget()->removeImage(imageItem->getImagePath());
+                    emit m_middleWidgets->sig_imagesResRemove(imageItem->getImagePath(),NULL);
                 }
             }
             emit m_middleWidgets->imagesResChanged();

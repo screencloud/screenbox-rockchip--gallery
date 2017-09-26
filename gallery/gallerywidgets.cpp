@@ -2,17 +2,20 @@
 
 #include <QDirIterator>
 
+#include <QDebug>
+#include <QCryptographicHash>
+
 GalleryWidgets::GalleryWidgets(QWidget *parent):BaseWidget(parent)
 {
     setStyleSheet("QLabel{color:white;}");
 
-    initData();
     initLayout();
     initConnection();
+    initData();
 }
 
 void GalleryWidgets::initData(){
-    m_loadImageThread = new LoadImageThread(this,this);
+    m_loadImageThread = new LoadImageThread(this,this,m_middleWid);
 
     m_refreshSuffixList.append("jpg");
     m_refreshSuffixList.append("png");
@@ -99,14 +102,13 @@ void GalleryWidgets::addRefreshSuffix(QString suffix)
 void GalleryWidgets::slot_onReturnClicked()
 {
     // Destory load-image thread while exit application.
-    if(m_loadImageThread && m_loadImageThread->isRunning()){
-        m_loadImageThread->stopThread();
-    }
-
     if(m_middleWid->isViewerMode()){
         m_middleWid->leaveViewerMode();
         m_topWid->updateTopTitle(str_top_title);
     }else{
+        if(m_loadImageThread && m_loadImageThread->isRunning()){
+            m_loadImageThread->stopThread();
+        }
         mainWindow->onApplicationClose();
     }
 }
@@ -124,10 +126,10 @@ void GalleryWidgets::slot_onViewerResChanged(QString imagePath)
     }
 }
 
-LoadImageThread::LoadImageThread(QObject *parent,GalleryWidgets *parentWidget):QThread(parent)
+LoadImageThread::LoadImageThread(QObject *parent,GalleryWidgets *parentWidget,GalleryMiddleWidgets *middleWid):QThread(parent)
 {
     m_parent = parentWidget;
-
+    m_middleWid=middleWid;
     qRegisterMetaType<QFileInfoList>("QFileInfoList");
     qRegisterMetaType<QMap<QString,QImage>>("QMap<QString,QImage*>");
 }
@@ -168,19 +170,32 @@ void LoadImageThread::run()
         }
     }else{
         for(it = imagesRes.begin();it!=imagesRes.end();it++){
+            emit m_middleWid->sig_imagesResRemove(it.key(),NULL);
             delete it.value();
         }
         imagesRes.clear();
     }
 
+    QDir  thumbDir("/tmp/thumb/");
+    if(!thumbDir.exists()){
+        thumbDir.mkdir(thumbDir.absolutePath());
+    }
+    QImage *tempImage;
+
     // Traverse path list to add item.
     for(int i = 0;i < filePathList.size() && !isInterruptionRequested();i++){
         if(!imagesRes.keys().contains(filePathList.at(i))){
-            QImage *tempImage = new QImage();
-            if(tempImage->load(filePathList.at(i))){
-                qDebug("add item: %s",qPrintable(filePathList.at(i)));
+            tempImage = new QImage();
+            QString src_path=filePathList.at(i);
+
+            QFileInfo thumb(thumbDir.absolutePath()+"/"+fileMD5(src_path)+".thumb");
+
+            if(!thumb.exists()){
+                compressImg(src_path,thumb.absoluteFilePath());
+            }
+            if(tempImage->load(thumb.absoluteFilePath())){
                 imagesRes.insert(filePathList.at(i),tempImage);
-                emit m_parent->loadImageComplete();
+                emit m_middleWid->sig_imagesResInsert(filePathList.at(i),tempImage);
             }else{
                 delete tempImage;
             }
@@ -188,8 +203,43 @@ void LoadImageThread::run()
     }
     emit m_parent->loadImageComplete();
 }
+QString LoadImageThread::fileMD5(QString path){
+    QString md5;
+    QByteArray bb;
+    bb = QCryptographicHash::hash ( path.toLatin1(), QCryptographicHash::Md5 );
+    md5.append(bb.toHex());
+    return md5;
+}
 
 GalleryWidgets::~GalleryWidgets()
 {
+}
+
+void LoadImageThread::compressImg(QString src,QString out)
+{
+    QImage img;
+    img.load(src);
+    QImage result = img.scaled(800, 600, Qt::KeepAspectRatio, Qt::FastTransformation).scaled(260, 140, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    bool isSuccess = result.save(out, "JPEG", 100);
+    if (!isSuccess)
+    {
+        qDebug() << "save image fail!";
+    }
+    QFile file(out);
+    qint64 fsz = file.size();
+
+    int quality = 100;
+    while (fsz > 2048)
+    {
+        quality = quality - 5;
+        isSuccess = result.save(out, "JPEG", quality);
+        if (!isSuccess)
+        {
+            qDebug() << "save image fail! quality=" << quality;
+        }
+        fsz = file.size();
+        if (quality <= 0)
+            break;
+    }
 }
 

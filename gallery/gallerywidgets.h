@@ -57,7 +57,7 @@ signals:
 class LoadImageThread: public QThread
 {
 public:
-    LoadImageThread(QObject *parent,GalleryWidgets *parentWidget);
+    LoadImageThread(QObject *parent,GalleryWidgets *parentWidget,GalleryMiddleWidgets *middleWid);
     ~LoadImageThread();
 
     void setFileInfoList(QFileInfoList infoList);
@@ -65,7 +65,10 @@ public:
 private:
     GalleryWidgets *m_parent;
     QFileInfoList m_infoList;
+    GalleryMiddleWidgets *m_middleWid;
 protected:
     void run();
+    void compressImg(QString src,QString out);
+    QString fileMD5(QString path);
 };
 #endif // GALLERYWIDGETS_H
