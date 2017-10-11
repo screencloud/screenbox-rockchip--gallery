@@ -4,6 +4,7 @@
 
 #include <QDebug>
 #include <QCryptographicHash>
+#include <QThread>
 
 GalleryWidgets::GalleryWidgets(QWidget *parent):BaseWidget(parent)
 {
@@ -53,7 +54,7 @@ QFileInfoList GalleryWidgets::findImgFiles(const QString& path)
     QFileInfoList imageFiles;
 
     QDirIterator it(path,QDir::Files|QDir::Dirs|QDir::NoDotAndDotDot);
-    while (it.hasNext()){
+    while (!QThread::currentThread()->isInterruptionRequested()&& it.hasNext()){
         QString name = it.next();
         QFileInfo info(name);
         if (info.isDir()){

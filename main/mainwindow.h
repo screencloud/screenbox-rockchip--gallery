@@ -6,10 +6,11 @@
 #include "gallerywidgets.h"
 #include "base/basewindow.h"
 #include "global_value.h"
-#include "ueventthread.h"
-#include "inotifythread.h"
+
+#include "MediaNotificationReceiver.h"
 
 class GalleryWidgets;
+class MediaUpdateThread;
 
 /**
  * The main window of application.
@@ -35,9 +36,8 @@ private:
     bool mediaHasUpdate;
     GalleryWidgets *m_galleryWid;
     // Thread for media resource update.
-    UeventThread *ueventThread;
-    InotifyThread *inotifyThread;
-
+    MediaUpdateThread *thread;
+    MediaNotificationReceiver * m_receiver;
     void initData();
     void initLayout();
     void initConnection();
@@ -57,6 +57,7 @@ class MediaUpdateThread:public QThread
 {
 public:
     MediaUpdateThread(QObject *parent ,MainWindow *mainWindow);
+    ~MediaUpdateThread();
 private:
     MainWindow *m_mainWindow;
 protected:

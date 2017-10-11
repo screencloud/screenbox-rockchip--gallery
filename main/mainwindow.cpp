@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 
+#include "MediaNotificationReceiver.h"
 MainWindow::MainWindow(QWidget *parent):BaseWindow(parent)
   ,mediaHasUpdate(false)
 {
@@ -15,10 +16,9 @@ void MainWindow::initData()
     mainWindow = this;
     // Start media source update thread.
     // Uevent for usb and inotify for file modify.
-    ueventThread = new UeventThread(this);
-    ueventThread->start();
-    inotifyThread = new InotifyThread(this);
-    inotifyThread->start();
+
+    m_receiver = new MediaNotificationReceiver();
+    m_receiver->receive();
 }
 
 void MainWindow::initLayout(){
@@ -37,6 +37,7 @@ void MainWindow::initConnection()
 {
     connect(this,SIGNAL(beginUpdateMediaResource()),this,SLOT(slot_setUpdateFlag()));
     connect(this,SIGNAL(searchResultAvailable(QFileInfoList)),this,SLOT(slot_handleSearchResult(QFileInfoList)));
+    connect(m_receiver,SIGNAL(mediaNotification(MediaNotification*)),this,SLOT(slot_setUpdateFlag()));
 }
 
 void MainWindow::slot_setUpdateFlag()
@@ -55,7 +56,7 @@ void MainWindow::slot_setUpdateFlag()
 void MainWindow::slot_updateMedia()
 {
     qDebug("Update image resource.");
-    MediaUpdateThread *thread = new MediaUpdateThread(this,this);
+    thread = new MediaUpdateThread(this,this);
     thread->start();
     mediaHasUpdate =false;
 }
@@ -79,6 +80,12 @@ void MainWindow::slot_handleSearchResult(QFileInfoList fileInfoList)
 
 void MainWindow::onApplicationClose()
 {
+    if(m_receiver){
+        delete m_receiver;
+    }
+    if(thread){
+        delete thread;
+    }
     this->close();
 }
 
@@ -108,6 +115,14 @@ MediaUpdateThread::MediaUpdateThread(QObject *parent,MainWindow *mainWindow):QTh
 {
     m_mainWindow = mainWindow;
     qRegisterMetaType<QFileInfoList>("QFileInfoList");
+}
+
+MediaUpdateThread::~MediaUpdateThread(){
+    if(isRunning()){
+        requestInterruption();
+        quit();
+        wait();
+    }
 }
 
 void MediaUpdateThread::run()
