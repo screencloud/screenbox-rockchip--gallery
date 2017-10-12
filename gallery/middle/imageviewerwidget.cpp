@@ -121,11 +121,7 @@ void ImageViewerWidget::slot_nextImage()
 
 void ImageViewerWidget::slot_viewDetail()
 {
-    QFileInfo *info = new QFileInfo(m_imagePath);
-    if(info->exists())
-    {
-        ImageDetailWidget::showImageDetail(this,m_imagePath);
-    }
+    ImageDetailWidget::showImageDetail(this,m_imagePath);
 }
 
 void ImageViewerWidget::slot_deleteImage()
@@ -138,8 +134,7 @@ void ImageViewerWidget::slot_deleteImage()
                 QString removePath = m_imagePath;
                 slot_nextImage();
                 mainWindow->getGalleryWidget()->removeImage(removePath);
-                //m_middleWidgets->imagesResChanged();
-                emit m_middleWidgets->sig_imagesResRemove(removePath,NULL);
+                emit m_middleWidgets->sig_imagesResRemove(removePath);
             }
         }
     }

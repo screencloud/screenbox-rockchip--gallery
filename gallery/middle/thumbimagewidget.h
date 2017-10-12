@@ -4,13 +4,13 @@
 #include "basewidget.h"
 
 #include <QObject>
-#include <QListWidget>
 #include <QImage>
 #include <QLabel>
 
 #include "gallerymiddlewidgets.h"
 #include "thumbimageitem.h"
 #include "basepushbutton.h"
+#include <base/baselistwidget.h>
 
 class GalleryMiddleWidgets;
 
@@ -38,10 +38,9 @@ private:
     QPushButton *m_btnMode;
     QPushButton *m_btnUpdate;
 
-    QListWidget *m_imageListWid;
+    BaseListWidget *m_imageListWid;
 
     QList<ThumbImageItem*> m_selectedItems;
-
     QMap<QString,QListWidgetItem*> m_thumbs;
 signals:
     void imagesResChanged();
@@ -52,7 +51,7 @@ private slots:
     void slot_updateImages();
 public:
     void onImagesResInsert(QString path,QImage* thumb);
-    void onImagesResRemove(QString path,QImage* thumb);
+    void onImagesResRemove(QString path);
 };
 
 

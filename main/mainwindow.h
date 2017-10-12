@@ -12,6 +12,8 @@
 class GalleryWidgets;
 class MediaUpdateThread;
 
+class MediaUpdateThread;
+
 /**
  * The main window of application.
  *
@@ -35,9 +37,10 @@ protected:
 private:
     bool mediaHasUpdate;
     GalleryWidgets *m_galleryWid;
-    // Thread for media resource update.
-    MediaUpdateThread *thread;
+
     MediaNotificationReceiver * m_receiver;
+    MediaUpdateThread *mediaUpdateThread;
+
     void initData();
     void initLayout();
     void initConnection();
@@ -57,10 +60,19 @@ class MediaUpdateThread:public QThread
 {
 public:
     MediaUpdateThread(QObject *parent ,MainWindow *mainWindow);
-    ~MediaUpdateThread();
+    ~MediaUpdateThread(){}
+
+    void waitForThreadFinished();
+
 private:
     MainWindow *m_mainWindow;
+
+    // List of search suffix when search images resource.
+    QList<QString> m_searchSuffixList;
+    QFileInfoList findImgFiles(const QString& path);
+
 protected:
     void run();
+
 };
 #endif // MAINWINDOW_H

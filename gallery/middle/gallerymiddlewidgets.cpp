@@ -39,7 +39,7 @@ void GalleryMiddleWidgets::initConnection()
     connect(this,SIGNAL(imageItemClick(QString,QImage*)),this,SLOT(slot_showImageViewer(QString,QImage*)));
     connect(this,SIGNAL(imagesResChanged()),this,SLOT(slot_onImagesResChanged()));
     connect(this,SIGNAL(sig_imagesResInsert(QString,QImage*)),this,SLOT(slot_imagesResInsert(QString,QImage*)));
-    connect(this,SIGNAL(sig_imagesResRemove(QString,QImage*)),this,SLOT(slot_imagesResRemove(QString,QImage*)));
+    connect(this,SIGNAL(sig_imagesResRemove(QString)),this,SLOT(slot_imagesResRemove(QString)));
 }
 
 void GalleryMiddleWidgets::slot_showEmptyImageTip()
@@ -77,7 +77,7 @@ void GalleryMiddleWidgets::slot_imagesResInsert(QString path,QImage* img){
     m_thumbImgWid->onImagesResInsert(path,img);
 }
 
-void GalleryMiddleWidgets::slot_imagesResRemove(QString path,QImage* img){
-    m_thumbImgWid->onImagesResRemove(path,img);
+void GalleryMiddleWidgets::slot_imagesResRemove(QString path){
+    m_thumbImgWid->onImagesResRemove(path);
 }
 

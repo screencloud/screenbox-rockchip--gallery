@@ -41,7 +41,7 @@ private:
 signals:
     void imagesResChanged();
     void sig_imagesResInsert(QString path,QImage* img);
-    void sig_imagesResRemove(QString path,QImage* img);
+    void sig_imagesResRemove(QString path);
     void imageEmpty();
     void imageItemClick(QString imagePath,QImage *image);
     void viewerResChanged(QString filePath);
@@ -50,7 +50,7 @@ private slots:
     void slot_showImageViewer(QString imagePath,QImage *image);
     void slot_onImagesResChanged();
     void slot_imagesResInsert(QString path,QImage* img);
-    void slot_imagesResRemove(QString path,QImage* img);
+    void slot_imagesResRemove(QString path);
 };
 
 #endif // GALLERYMIDDLEWIDGETS_H

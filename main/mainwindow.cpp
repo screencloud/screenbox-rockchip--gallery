@@ -1,8 +1,12 @@
 #include "mainwindow.h"
 
 #include "MediaNotificationReceiver.h"
+#include <QDir>
+#include <QDirIterator>
+
 MainWindow::MainWindow(QWidget *parent):BaseWindow(parent)
-  ,mediaHasUpdate(false)
+  , mediaHasUpdate(false)
+  , mediaUpdateThread(0)
 {
     initData();
     initLayout();
@@ -55,10 +59,18 @@ void MainWindow::slot_setUpdateFlag()
 
 void MainWindow::slot_updateMedia()
 {
+    if (mediaUpdateThread) {
+        if (mediaUpdateThread->isRunning()) {
+            return;
+        } else {
+            delete mediaUpdateThread;
+            mediaUpdateThread = 0;
+        }
+    }
     qDebug("Update image resource.");
-    thread = new MediaUpdateThread(this,this);
-    thread->start();
-    mediaHasUpdate =false;
+    mediaUpdateThread = new MediaUpdateThread(this,this);
+    mediaUpdateThread->start();
+    mediaHasUpdate = false;
 }
 
 void MainWindow::disableApplication()
@@ -83,9 +95,10 @@ void MainWindow::onApplicationClose()
     if(m_receiver){
         delete m_receiver;
     }
-    if(thread){
-        delete thread;
-    }
+
+    if(mediaUpdateThread && mediaUpdateThread->isRunning())
+        mediaUpdateThread->waitForThreadFinished();
+
     this->close();
 }
 
@@ -115,20 +128,49 @@ MediaUpdateThread::MediaUpdateThread(QObject *parent,MainWindow *mainWindow):QTh
 {
     m_mainWindow = mainWindow;
     qRegisterMetaType<QFileInfoList>("QFileInfoList");
+
+    m_searchSuffixList.append("jpg");
+    m_searchSuffixList.append("png");
+    m_searchSuffixList.append("bmp");
+    m_searchSuffixList.append("jpeg");
+    m_searchSuffixList.append("svg");
+    m_searchSuffixList.append("titf");
+    m_searchSuffixList.append("gif");
 }
 
-MediaUpdateThread::~MediaUpdateThread(){
-    if(isRunning()){
-        requestInterruption();
-        quit();
-        wait();
+void MediaUpdateThread::waitForThreadFinished()
+{
+    requestInterruption();
+    quit();
+    wait();
+}
+
+QFileInfoList MediaUpdateThread::findImgFiles(const QString &path)
+{
+    QFileInfoList imageFiles;
+
+    QDirIterator it(path,QDir::Files|QDir::Dirs|QDir::NoDotAndDotDot);
+    while (it.hasNext()){
+        QString name = it.next();
+        QFileInfo info(name);
+        if (info.isDir()){
+            imageFiles.append(findImgFiles(name));
+        }else{
+            for(int i=0;i<m_searchSuffixList.count();i++){
+                if(info.suffix().compare(m_searchSuffixList.at(i),Qt::CaseInsensitive) == 0){
+                    imageFiles.append(info);
+                }
+            }
+        }
     }
+    return imageFiles;
 }
 
 void MediaUpdateThread::run()
 {
-    QFileInfoList fileInfoList = m_mainWindow->getGalleryWidget()->findImgFiles(GALLERY_SEARCH_PATH);
-    emit m_mainWindow->searchResultAvailable(fileInfoList);
+    QFileInfoList fileInfoList = findImgFiles(GALLERY_SEARCH_PATH);
+    if (!isInterruptionRequested())
+        emit m_mainWindow->searchResultAvailable(fileInfoList);
 }
 
 MainWindow::~MainWindow()

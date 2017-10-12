@@ -1,10 +1,9 @@
 #include "gallerywidgets.h"
 
-#include <QDirIterator>
-
 #include <QDebug>
 #include <QCryptographicHash>
 #include <QThread>
+#include <QDir>
 
 GalleryWidgets::GalleryWidgets(QWidget *parent):BaseWidget(parent)
 {
@@ -17,14 +16,6 @@ GalleryWidgets::GalleryWidgets(QWidget *parent):BaseWidget(parent)
 
 void GalleryWidgets::initData(){
     m_loadImageThread = new LoadImageThread(this,this,m_middleWid);
-
-    m_refreshSuffixList.append("jpg");
-    m_refreshSuffixList.append("png");
-    m_refreshSuffixList.append("bmp");
-    m_refreshSuffixList.append("jpeg");
-    m_refreshSuffixList.append("svg");
-    m_refreshSuffixList.append("titf");
-    m_refreshSuffixList.append("gif");
 }
 
 void GalleryWidgets::initLayout()
@@ -47,27 +38,6 @@ void GalleryWidgets::initConnection()
     connect(m_topWid->getReturenButton(),SIGNAL(clicked(bool)),this,SLOT(slot_onReturnClicked()));
     connect(m_middleWid,SIGNAL(viewerResChanged(QString)),this,SLOT(slot_onViewerResChanged(QString)));
     connect(this,SIGNAL(loadImageComplete()),this,SLOT(slot_onImageLoadComplete()));
-}
-
-QFileInfoList GalleryWidgets::findImgFiles(const QString& path)
-{
-    QFileInfoList imageFiles;
-
-    QDirIterator it(path,QDir::Files|QDir::Dirs|QDir::NoDotAndDotDot);
-    while (!QThread::currentThread()->isInterruptionRequested()&& it.hasNext()){
-        QString name = it.next();
-        QFileInfo info(name);
-        if (info.isDir()){
-            imageFiles.append(findImgFiles(name));
-        }else{
-            for(int i=0;i<m_refreshSuffixList.count();i++){
-                if(info.suffix().compare(m_refreshSuffixList.at(i),Qt::CaseInsensitive) == 0){
-                    imageFiles.append(info);
-                }
-            }
-        }
-    }
-    return imageFiles;
 }
 
 void GalleryWidgets::processFileList(QFileInfoList fileInfoList)
@@ -93,11 +63,6 @@ void GalleryWidgets::removeImage(QString imagePath)
 void GalleryWidgets::slot_onImagesResChanged()
 {
     emit m_middleWid->imagesResChanged();
-}
-
-void GalleryWidgets::addRefreshSuffix(QString suffix)
-{
-    m_refreshSuffixList.append(suffix);
 }
 
 void GalleryWidgets::slot_onReturnClicked()
@@ -171,13 +136,13 @@ void LoadImageThread::run()
         }
     }else{
         for(it = imagesRes.begin();it!=imagesRes.end();it++){
-            emit m_middleWid->sig_imagesResRemove(it.key(),NULL);
+            emit m_middleWid->sig_imagesResRemove(it.key());
             delete it.value();
         }
         imagesRes.clear();
     }
 
-    QDir  thumbDir("/tmp/thumb/");
+    QDir thumbDir("/tmp/thumb/");
     if(!thumbDir.exists()){
         thumbDir.mkdir(thumbDir.absolutePath());
     }
@@ -187,13 +152,14 @@ void LoadImageThread::run()
     for(int i = 0;i < filePathList.size() && !isInterruptionRequested();i++){
         if(!imagesRes.keys().contains(filePathList.at(i))){
             tempImage = new QImage();
-            QString src_path=filePathList.at(i);
+            QString src_path = filePathList.at(i);
 
             QFileInfo thumb(thumbDir.absolutePath()+"/"+fileMD5(src_path)+".thumb");
 
             if(!thumb.exists()){
                 compressImg(src_path,thumb.absoluteFilePath());
             }
+
             if(tempImage->load(thumb.absoluteFilePath())){
                 imagesRes.insert(filePathList.at(i),tempImage);
                 emit m_middleWid->sig_imagesResInsert(filePathList.at(i),tempImage);
@@ -204,6 +170,7 @@ void LoadImageThread::run()
     }
     emit m_parent->loadImageComplete();
 }
+
 QString LoadImageThread::fileMD5(QString path){
     QString md5;
     QByteArray bb;

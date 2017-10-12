@@ -3,32 +3,27 @@
 #include "global_value.h"
 
 #ifdef DEVICE_EVB
-int detail_widget_width = 650;
 int detail_widget_height = 900;
 int confirm_button_width = 130;
 int confirm_button_hieght = 60;
-int title_width = 200;
+int title_width = 220;
 #else
-int detail_widget_width = 350;
 int detail_widget_height = 470;
 int confirm_button_width = 80;
 int confirm_button_hieght = 30;
-int title_width = 80;
+int title_width = 100;
 
 #endif
 
 ImageDetailWidget::ImageDetailWidget(QWidget *parent):QDialog(parent)
 {
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::Dialog);
-    setFixedSize(detail_widget_width,detail_widget_height);
-    move((int)((parent->width()-width())/2),(int)((parent->height()-height())/2));
+    setMinimumHeight(detail_widget_height);
 
     setObjectName("ImageDetailWidget");
     setStyleSheet("#ImageDetailWidget{background:rgb(56,58,66);border-radius:5px}"
                   "QLabel{color:white;}");
-    QFont font = this->font();
-    font.setPixelSize(font_size_big);
-    setFont(font);
+
     initLayout();
     initConnection();
 }
@@ -86,14 +81,13 @@ void ImageDetailWidget::initLayout()
     controlLyout->addWidget(m_btnConfirm);
     controlLyout->setContentsMargins(10,10,20,10);
 
-
     mainLyout->addLayout(headerLyout);
     mainLyout->addWidget(underLine);
     mainLyout->addSpacing(20);
     mainLyout->addLayout(infoLyout);
     mainLyout->addStretch(0);
     mainLyout->addLayout(controlLyout);
-    mainLyout->setContentsMargins(0,10,0,10);
+    mainLyout->setContentsMargins(10,10,10,10);
 
     setLayout(mainLyout);
 }
@@ -164,9 +158,8 @@ int ImageDetailWidget::exec()
 void ImageDetailWidget::closeEvent(QCloseEvent *event)
 {
     if (m_eventLoop != NULL)
-    {
         m_eventLoop->exit();
-    }
+
     event->accept();
 }
 

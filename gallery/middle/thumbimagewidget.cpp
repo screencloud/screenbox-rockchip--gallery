@@ -78,7 +78,7 @@ void ThumbImageWidget::initLayout()
     m_controlBottom->setLayout(bottomLayout);
 
     // Layout of image thumb list.
-    m_imageListWid = new QListWidget(this);
+    m_imageListWid = new BaseListWidget(this);
     m_imageListWid->setIconSize(QSize(thumb_image_width,thumb_image_width));
     m_imageListWid->setStyleSheet("QListWidget::item:selected{background: transparent;}");
     /* cancel the border in ListWidget */
@@ -134,29 +134,25 @@ void ThumbImageWidget::onImagesResInsert(QString path,QImage* thumb){
     updateImageCount();
 }
 
-void ThumbImageWidget::onImagesResRemove(QString path,QImage* thumb){
-    QMap<QString,QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
+void ThumbImageWidget::onImagesResRemove(QString path){
     if(m_thumbs.keys().contains(path)){
-        QListWidgetItem *litsItem =m_thumbs[path];
+        QListWidgetItem *litsItem = m_thumbs[path];
         if(litsItem){
             m_imageListWid->removeItemWidget(litsItem);
             delete litsItem;
+            mainWindow->slot_updateMedia();
         }
     }
 }
 
 void ThumbImageWidget::slot_onImagesResChanged()
 {
-    QMap<QString,QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
-
-
     if(editMode){
         slot_changeImageMode();
     }
 
     updateImageCount();
-    if(m_imageListWid->count()==0)
-    {
+    if(m_imageListWid->count()==0){
         emit m_middleWidgets->imageEmpty();
     }
 }
@@ -164,8 +160,7 @@ void ThumbImageWidget::slot_onImagesResChanged()
 void ThumbImageWidget::slot_onListItemClick(QListWidgetItem *listItem)
 {
     ThumbImageItem *imageItem = (ThumbImageItem*)m_imageListWid->itemWidget(listItem);
-    if(editMode)
-    {
+    if(editMode){
         imageItem->onItemClick();
 
         if(imageItem->getCheckState()){
@@ -210,23 +205,12 @@ void ThumbImageWidget::slot_updateImages()
                 ThumbImageItem *imageItem = m_selectedItems.at(i);
                 if(QFile::remove(imageItem->getImagePath())){
                     mainWindow->getGalleryWidget()->removeImage(imageItem->getImagePath());
-                    emit m_middleWidgets->sig_imagesResRemove(imageItem->getImagePath(),NULL);
+                    emit m_middleWidgets->sig_imagesResRemove(imageItem->getImagePath());
                 }
             }
             emit m_middleWidgets->imagesResChanged();
         }
     }else{
-        bool isConfirm;
-        QString appendSuffix = QInputDialog::getText(mainWindow,"Add Refresh Suffix",
-                                                     "Please input extra file suffix",
-                                                     QLineEdit::Normal,
-                                                     "",
-                                                     &isConfirm);
-        if(isConfirm){
-            if(!appendSuffix.isEmpty()){
-                mainWindow->getGalleryWidget()->addRefreshSuffix(appendSuffix);
-            }
-            mainWindow->slot_updateMedia();
-        }
+        mainWindow->slot_updateMedia();
     }
 }
