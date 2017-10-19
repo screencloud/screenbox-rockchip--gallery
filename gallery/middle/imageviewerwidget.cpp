@@ -128,7 +128,7 @@ void ImageViewerWidget::slot_deleteImage()
 {
     QFileInfo *info = new QFileInfo(m_imagePath);
     if(info->exists()){
-        int result = CMessageBox::showCMessageBox(this,str_question_delete_image,str_button_delete,str_button_cancel);
+        int result = CMessageBox::showCMessageBox(this,tr("Delete images?"),tr("Delete"),tr("Cancel"));
         if(result == ChosseResult::RESULT_CONFIRM){
             if(QFile::remove(m_imagePath)){
                 QString removePath = m_imagePath;

@@ -23,6 +23,8 @@ void GalleryWidgets::initLayout()
     QVBoxLayout *vmainlyout = new QVBoxLayout;
 
     m_topWid = new GalleryTopWidgets(this);
+    m_topWid->updateTopTitle(tr("imageGallery"));
+
     m_middleWid = new GalleryMiddleWidgets(this);
 
     vmainlyout->addWidget(m_topWid);
@@ -70,7 +72,7 @@ void GalleryWidgets::slot_onReturnClicked()
     // Destory load-image thread while exit application.
     if(m_middleWid->isViewerMode()){
         m_middleWid->leaveViewerMode();
-        m_topWid->updateTopTitle(str_top_title);
+        m_topWid->updateTopTitle(tr("imageGallery"));
     }else{
         if(m_loadImageThread && m_loadImageThread->isRunning()){
             m_loadImageThread->stopThread();
@@ -82,7 +84,7 @@ void GalleryWidgets::slot_onReturnClicked()
 void GalleryWidgets::slot_onViewerResChanged(QString imagePath)
 {
     if(imagePath == ""){
-        m_topWid->updateTopTitle(str_top_title);
+        m_topWid->updateTopTitle(tr("imageGallery"));
     }else{
         QFileInfo *info = new QFileInfo(imagePath);
         if(info->exists())

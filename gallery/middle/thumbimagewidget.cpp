@@ -51,11 +51,11 @@ void ThumbImageWidget::initLayout()
     m_tipText->setFont(font);
     m_tipText->adjustSize();
 
-    m_btnMode = new QPushButton(str_button_edit_image,this);
+    m_btnMode = new QPushButton(tr("EditMode"),this);
     m_btnMode->setStyleSheet("QPushButton{background:rgb(36,184,71);color:white;border-radius:5px}"
                              "QPushButton::hover{background:rgb(25,166,58)}"
                              "QPushButton::pressed{background:rgb(25,166,58)}");
-    m_btnUpdate = new QPushButton(str_button_refresh_image,this);
+    m_btnUpdate = new QPushButton(tr("Refresh"),this);
     m_btnUpdate->setStyleSheet("QPushButton{background:rgb(36,184,71);color:white;border-radius:5px}"
                                "QPushButton::hover{background:rgb(25,166,58)}"
                                "QPushButton::pressed{background:rgb(25,166,58)}");
@@ -111,7 +111,7 @@ void ThumbImageWidget::initConnection()
 
 void ThumbImageWidget::updateImageCount()
 {
-    m_imageCountText->setText(str_image_and_preview+"("+QString::number(m_imageListWid->count())+")");
+    m_imageCountText->setText(tr("★ Image and Preview(%1)").arg(QString::number(m_imageListWid->count())));
 }
 
 void ThumbImageWidget::updateTipText()
@@ -119,7 +119,7 @@ void ThumbImageWidget::updateTipText()
     if(!editMode){
         m_tipText->setText("");
     }else{
-        m_tipText->setText(str_imge_have_seleted1+QString::number(m_selectedItems.size())+str_imge_have_seleted2);
+        m_tipText->setText(tr("Current has %1 images seleted").arg(QString::number(m_selectedItems.size())));
     }
 }
 
@@ -184,13 +184,13 @@ void ThumbImageWidget::slot_changeImageMode()
         }
         m_selectedItems.clear();
         editMode = false;
-        m_btnUpdate->setText(str_button_refresh_image);
-        m_btnMode->setText(str_button_edit_image);
+        m_btnUpdate->setText(tr("Refresh"));
+        m_btnMode->setText(tr("EditMode"));
         updateTipText();
     }else{
         editMode = true;
-        m_btnUpdate->setText(str_button_delete_image);
-        m_btnMode->setText(str_button_edit_image_cancel);
+        m_btnUpdate->setText(tr("Delete"));
+        m_btnMode->setText(tr("Cancel"));
         updateTipText();
     }
 }
@@ -198,7 +198,7 @@ void ThumbImageWidget::slot_changeImageMode()
 void ThumbImageWidget::slot_updateImages()
 {
     if(m_selectedItems.size()>0&&editMode){
-        int result = CMessageBox::showCMessageBox(this,str_question_delete_image,str_button_delete,str_button_cancel);
+        int result = CMessageBox::showCMessageBox(this,tr("Delete images?"),tr("Delete"),tr("Cancel"));
         if(result == RESULT_CONFIRM){
             // Delete images selected
             for(int i=0;i<m_selectedItems.size();i++){

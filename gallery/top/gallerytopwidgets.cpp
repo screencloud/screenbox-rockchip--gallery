@@ -23,11 +23,11 @@ void GalleryTopWidgets::initLayout()
     m_btnIcon->setFixedSize(top_icon_size,top_icon_size);
     m_btnIcon->setStyleSheet("QPushButton{background:transparent;border-image:url(:/image/gallery/gallery_top_icon.png)}");
 
-    m_titleLabel = new QLabel(str_top_title,this);
+    m_titleLabel = new QLabel(this);
     QFont font = m_titleLabel->font();
     font.setPixelSize(font_size_big);
     m_titleLabel->setFont(font);
-    m_titleLabel->setAlignment(Qt::AlignCenter);
+    m_titleLabel->setAlignment(Qt::AlignCenter);    
 
     QHBoxLayout *lyout1 = new QHBoxLayout;
     lyout1->addWidget(m_btnReturn);

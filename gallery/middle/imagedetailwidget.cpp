@@ -40,7 +40,7 @@ void ImageDetailWidget::initLayout()
     // Header
     QHBoxLayout *headerLyout = new QHBoxLayout;
 
-    QLabel *titleLabel = new QLabel(str_image_information,this);
+    QLabel *titleLabel = new QLabel(tr("Image Infomation"),this);
     QFont font = titleLabel->font();
     font.setBold(true);
     titleLabel->setFont(font);
@@ -71,7 +71,7 @@ void ImageDetailWidget::initLayout()
     // Confirm cancel button
     QHBoxLayout *controlLyout = new QHBoxLayout;
 
-    m_btnConfirm = new FlatButton(str_confirm,this);
+    m_btnConfirm = new FlatButton(tr("Confirm"),this);
     m_btnConfirm->setStyleSheet("QPushButton{background:rgb(36,184,71);color:white;border-radius:5px}"
                                 "QPushButton::hover{background:rgb(25,166,58)}"
                                 "QPushButton::pressed{background:rgb(25,166,58)}");
@@ -102,7 +102,7 @@ QString getImageResolution(QString imagePath)
     QString result;
     QImage image;
     if(image.load(imagePath)){
-        result.append(QString::number(image.width())).append("×").append(QString::number(image.height())).append(str_resolution_tip);
+        result.append(QString::number(image.width())).append("×").append(QString::number(image.height())).append("(width×height)");
     }
     return result;
 }
@@ -136,12 +136,12 @@ int ImageDetailWidget::showImageDetail(QWidget *parent, QString imagePath)
     QFileInfo *info = new QFileInfo(imagePath);
     if(info->exists())
     {
-        detailWidget->nameItem->updateItem(str_image_name,info->baseName());
-        detailWidget->patternItem->updateItem(str_image_pattern,info->completeSuffix());
-        detailWidget->resolutionItem->updateItem(str_image_resolution,getImageResolution(imagePath));
-        detailWidget->locationItem->updateItem(str_image_location,info->absolutePath());
-        detailWidget->sizeItem->updateItem(str_image_size,convertFileSize(info->size()));
-        detailWidget->createTimeItem->updateItem(str_image_create_time,info->created().toString("yyyy-MM-dd hh:mm"));
+        detailWidget->nameItem->updateItem(tr("Name"),info->baseName());
+        detailWidget->patternItem->updateItem(tr("Pattern"),info->completeSuffix());
+        detailWidget->resolutionItem->updateItem(tr("Resolution"),getImageResolution(imagePath));
+        detailWidget->locationItem->updateItem(tr("Location"),info->absolutePath());
+        detailWidget->sizeItem->updateItem(tr("Size"),convertFileSize(info->size()));
+        detailWidget->createTimeItem->updateItem(tr("CreateTime"),info->created().toString("yyyy-MM-dd hh:mm"));
     }
     return detailWidget->exec();
 }

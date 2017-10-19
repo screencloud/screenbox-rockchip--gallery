@@ -22,6 +22,8 @@ void GalleryMiddleWidgets::initLayout()
     m_stackedMainLyout = new QStackedLayout(this);
 
     m_emptyImgWid = new EmptyImagesWidget(this);
+    m_emptyImgWid->tip1->setText(tr("All in the family"));
+    m_emptyImgWid->tip2->setText(tr("Take a picture & Photo saved on this device appear here."));
     m_thumbImgWid = new ThumbImageWidget(this);
     m_viewerWid = new ImageViewerWidget(this);
 

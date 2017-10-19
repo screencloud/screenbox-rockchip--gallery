@@ -24,4 +24,11 @@ include(gallery/gallery.pri)
 
 RESOURCES += \
     res_gallery.qrc \
-    res_main.qrc
+    res_main.qrc \
+    i18n.qrc
+
+HEADERS += \
+    translations/language.h
+
+SOURCES += \
+    translations/language.cpp

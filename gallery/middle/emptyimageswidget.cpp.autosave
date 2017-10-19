@@ -33,7 +33,7 @@ void EmptyImagesWidget::initLayout()
     tip1 = new QLabel(this);
     tip1->setAlignment(Qt::AlignCenter);
 
-    tip2= new QLabel(tr("Take a picture & Photo saved on this device appear here."),this);
+    tip2= new QLabel(this);
     tip2->setAlignment(Qt::AlignCenter);
 
     vmainlyout->addStretch(0);
