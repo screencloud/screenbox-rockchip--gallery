@@ -7,8 +7,6 @@
 #include "imageviewerwidget.h"
 
 #include <QStackedLayout>
-#include <QListWidget>
-#include <QFileInfoList>
 
 class ThumbImageWidget;
 class ImageViewerWidget;
@@ -20,36 +18,38 @@ class ImageViewerWidget;
  * by images state.
  * The three stacked widgets are: viewer、empty、thumb
  */
-class GalleryMiddleWidgets:public BaseWidget
+class MiddleWidget : public BaseWidget
 {
     Q_OBJECT
 public:
-    GalleryMiddleWidgets(QWidget *parent);
+    MiddleWidget(QWidget *parent);
 
-    bool isViewerMode(){return m_stackedMainLyout->currentWidget() == (QWidget*)m_viewerWid;}
+    bool isViewerMode();
     void leaveViewerMode();
+
 private:
-    // Main stacked layout
-    QStackedLayout *m_stackedMainLyout;
+    QStackedLayout *m_stackLayout;
+
     EmptyImagesWidget *m_emptyImgWid;
     ThumbImageWidget *m_thumbImgWid;
     ImageViewerWidget *m_viewerWid;
 
     void initLayout();
     void initConnection();
-    QFileInfoList findImgFiles(const QString& path);
+
 signals:
     void imagesResChanged();
-    void sig_imagesResInsert(QString path,QImage* img);
+    void sig_imagesResInsert(QString path, QImage *img);
     void sig_imagesResRemove(QString path);
     void imageEmpty();
-    void imageItemClick(QString imagePath,QImage *image);
+    void imageItemClick(QString imagePath);
     void viewerResChanged(QString filePath);
+
 private slots:
     void slot_showEmptyImageTip();
-    void slot_showImageViewer(QString imagePath,QImage *image);
+    void slot_showImageViewer(QString imagePath);
     void slot_onImagesResChanged();
-    void slot_imagesResInsert(QString path,QImage* img);
+    void slot_imagesResInsert(QString path, QImage *img);
     void slot_imagesResRemove(QString path);
 };
 

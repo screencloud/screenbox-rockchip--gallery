@@ -6,19 +6,21 @@
 
 #include <QLabel>
 
-class GalleryTopWidgets:public BaseWidget
+class TopWidget : public BaseWidget
 {
+    Q_OBJECT
 public:
-    GalleryTopWidgets(QWidget *parent);
-    ~GalleryTopWidgets(){}
+    TopWidget(QWidget *parent);
+    ~TopWidget();
 
     void updateTopTitle(QString title);
-    FourStateButton* getReturenButton(){return m_btnReturn;}
-private:
-    FourStateButton *m_btnReturn;
-    FlatButton *m_btnIcon;
-    QLabel *m_titleLabel;
 
+private:
+    QLabel *m_titleLabel;
     void initLayout();
+
+signals:
+    void returnClicked();
 };
+
 #endif // GALLERYTOPWIDGETS_H

@@ -1,36 +1,49 @@
 #ifndef THUMBIMAGEITEM_H
 #define THUMBIMAGEITEM_H
 
-#include <QWidget>
 #include <QImage>
 #include <QLabel>
 #include <QStackedLayout>
-#include <QHBoxLayout>
 
+#include "basewidget.h"
 #include "brightnessmapper.h"
 
-class ThumbImageItem:public QWidget
+class ThumbImageItem : public BaseWidget
 {
+    Q_OBJECT
 public:
-    ThumbImageItem(QString imagePath,QImage *image);
+    ThumbImageItem(QString imagePath, QImage *image);
 
     void onItemClick();
-    QImage* getImage(){return m_image;}
-    QString getImagePath(){return m_imagePath;}
-    bool getCheckState(){return isChecked;}
-private:
-    void initLayout();
+
+    QImage* getImage()
+    {
+        return m_image;
+    }
+
+    QString getImagePath()
+    {
+        return m_imagePath;
+    }
+
+    bool getCheckState()
+    {
+        return isChecked;
+    }
+
 private:
     bool isChecked;
     bool toUpdate;
-
-    brightnessMapper *imageMapper;
     QStackedLayout *m_stackedLayout;
+    QString m_imagePath;
+    QImage *m_image;
+    brightnessMapper *imageMapper;
 
     QLabel *thumbImage;
     QLabel *m_checkImage;
-    QImage *m_image;
-    QString m_imagePath;
+
+    void initLayout();
+
 protected:
     void resizeEvent(QResizeEvent *event);
     void paintEvent(QPaintEvent *event);

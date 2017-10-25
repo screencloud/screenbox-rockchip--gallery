@@ -2,13 +2,13 @@
 #define EMPTYIMAGESWIDGET_H
 
 #include "basewidget.h"
-#include <QLabel>
-class EmptyImagesWidget:public BaseWidget
+
+class EmptyImagesWidget : public BaseWidget
 {
+    Q_OBJECT
 public:
-    EmptyImagesWidget(QWidget *parent);
-    QLabel *tip1;
-    QLabel *tip2 ;
+    EmptyImagesWidget(QWidget *parent = 0);
+
 private:
     void initLayout();
 };

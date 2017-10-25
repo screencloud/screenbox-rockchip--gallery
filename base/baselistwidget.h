@@ -19,7 +19,6 @@ private:
     QMutex mutex;
     int scrollBarMaximum;
     QPoint m_pressPoint;
-
 };
 
 #endif // BASELISTWIDGET_H

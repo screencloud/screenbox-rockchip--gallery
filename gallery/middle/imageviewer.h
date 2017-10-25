@@ -10,6 +10,9 @@
 #include <QGestureEvent>
 #include <QPinchGesture>
 #include <QMovie>
+#include <QThread>
+
+class PixmalLoadThread;
 
 class ImageViewer : public QLabel
 {
@@ -18,7 +21,7 @@ public:
     explicit ImageViewer(QWidget *parent = 0);
     ~ImageViewer();
 
-    void setPixmap(const QPixmap &pixmap);
+    bool setPixmap(const QString &path);
     void setMoviePath(QString filePath);
 
     void showOriginalSize();
@@ -27,27 +30,12 @@ public:
     void zoomOut();
     void clockwise90();
     void anticlockwise90();
+    QSize getSize();
 
 private:
-    void ariseScale(int rate);
-signals:
-    void percentageChanged(double percentage);
-    void rightButtonClicked();
-
-protected:
-    void paintEvent(QPaintEvent *event);
-    void wheelEvent(QWheelEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    bool event(QEvent *event) Q_DECL_OVERRIDE;
-
-signals:
-
-public slots:
-
-private:
-    bool gifShow;
+    QTimer *m_loadTitleShowTimer;
+    bool m_showLoadTitle;
+    bool m_gifShow;
     QPixmap m_pixmap;
     QMovie *m_movie;
 
@@ -64,5 +52,41 @@ private:
     int m_suitableHeight;
 
     qreal currentStepScaleFactor;
+    PixmalLoadThread *m_loadThread;
+    void ariseScale(int rate);
+
+signals:
+    void percentageChanged(double percentage);
+    void rightButtonClicked();
+
+public slots:
+    void hideLoadingTitle();
+    void showLoadingTitle();
+
+protected:
+    void paintEvent(QPaintEvent *event);
+    void wheelEvent(QWheelEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    bool event(QEvent *event) Q_DECL_OVERRIDE;
 };
+
+class PixmalLoadThread : public QThread
+{
+public:
+    explicit PixmalLoadThread(ImageViewer *parent, QPixmap *pixmap);
+    ~PixmalLoadThread();
+
+    void changeLoadPath(const QString &path);
+
+protected:
+    void run();
+
+private:
+    ImageViewer *m_parent;
+    QPixmap *m_pixmap;
+    QString m_loadPath;
+};
+
 #endif // IMAGEBROWSER_IMAGEHANDLER_H

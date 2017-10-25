@@ -6,7 +6,7 @@ HEADERS += \
     $$PWD/brightnessmapper.h \
     $$PWD/cmessagebox.h \
     $$PWD/cpushbutton.h \
-    $$PWD/cswitchbutton.h \
+    $$PWD/switchbutton.h \
     $$PWD/baselistwidget.h
 
 SOURCES += \
@@ -17,5 +17,5 @@ SOURCES += \
     $$PWD/brightnessmapper.cpp \
     $$PWD/cmessagebox.cpp \
     $$PWD/cpushbutton.cpp \
-    $$PWD/cswitchbutton.cpp \
+    $$PWD/switchbutton.cpp \
     $$PWD/baselistwidget.cpp

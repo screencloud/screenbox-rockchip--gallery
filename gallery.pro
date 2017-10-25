@@ -22,13 +22,12 @@ include(base/base.pri)
 INCLUDEPATH +=$$PWD gallery
 include(gallery/gallery.pri)
 
+INCLUDEPATH +=$$PWD translations
+
 RESOURCES += \
     res_gallery.qrc \
     res_main.qrc \
     i18n.qrc
 
-HEADERS += \
-    translations/language.h
-
-SOURCES += \
-    translations/language.cpp
+TRANSLATIONS += translations/i18n_en.ts \
+                translations/i18n_zh.ts

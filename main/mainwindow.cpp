@@ -1,37 +1,46 @@
 #include "mainwindow.h"
-
 #include "MediaNotificationReceiver.h"
+
 #include <QDir>
 #include <QDirIterator>
+#include <QStandardPaths>
 
-MainWindow::MainWindow(QWidget *parent):BaseWindow(parent)
+const QString GALLERY_SEARCH_PATH = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/mnt");
+
+MainWindow::MainWindow(QWidget *parent) : BaseWindow(parent)
   , mediaHasUpdate(false)
   , mediaUpdateThread(0)
 {
     initData();
     initLayout();
     initConnection();
+
     slot_updateMedia();
+}
+
+MainWindow::~MainWindow()
+{
 }
 
 void MainWindow::initData()
 {
-    // Initialize global main class of 'MainWindow' for other widgets invokes.
+    // initialize global main class of 'MainWindow' for other widgets invokes.
     mainWindow = this;
-    // Start media source update thread.
-    // Uevent for usb and inotify for file modify.
 
-    m_receiver = new MediaNotificationReceiver();
-    m_receiver->receive();
+    m_mediaUpdateReceiver = new MediaNotificationReceiver();
+    m_mediaUpdateReceiver->receive();
+
+    mediaUpdateThread = new MediaUpdateThread(this);
 }
 
-void MainWindow::initLayout(){
+void MainWindow::initLayout()
+{
     QVBoxLayout *mainLayout = new QVBoxLayout;
 
     m_galleryWid = new GalleryWidgets(this);
-    mainLayout->addWidget(m_galleryWid);
 
-    mainLayout->setContentsMargins(0,0,0,0);
+    mainLayout->addWidget(m_galleryWid);
+    mainLayout->setMargin(0);
     mainLayout->setSpacing(0);
 
     setLayout(mainLayout);
@@ -39,9 +48,9 @@ void MainWindow::initLayout(){
 
 void MainWindow::initConnection()
 {
-    connect(this,SIGNAL(beginUpdateMediaResource()),this,SLOT(slot_setUpdateFlag()));
-    connect(this,SIGNAL(searchResultAvailable(QFileInfoList)),this,SLOT(slot_handleSearchResult(QFileInfoList)));
-    connect(m_receiver,SIGNAL(mediaNotification(MediaNotification*)),this,SLOT(slot_setUpdateFlag()));
+    connect(this, SIGNAL(beginUpdateMediaResource()), this, SLOT(slot_setUpdateFlag()));
+    connect(this, SIGNAL(searchResultAvailable(QFileInfoList)), this, SLOT(slot_handleSearchResult(QFileInfoList)));
+    connect(m_mediaUpdateReceiver, SIGNAL(mediaNotification(MediaNotification*)), this, SLOT(slot_setUpdateFlag()));
 }
 
 void MainWindow::slot_setUpdateFlag()
@@ -51,24 +60,20 @@ void MainWindow::slot_setUpdateFlag()
      * So set a 500ms duration to ignore theres no-use siganls.
      * Note: it is expected to optimize.
      */
-    if(!mediaHasUpdate){
+    if (!mediaHasUpdate) {
         mediaHasUpdate = true;
-        QTimer::singleShot(500,this,SLOT(slot_updateMedia()));
+        QTimer::singleShot(500, this, SLOT(slot_updateMedia()));
     }
 }
 
 void MainWindow::slot_updateMedia()
 {
-    if (mediaUpdateThread) {
-        if (mediaUpdateThread->isRunning()) {
-            return;
-        } else {
-            delete mediaUpdateThread;
-            mediaUpdateThread = 0;
-        }
+    if (mediaUpdateThread->isRunning()) {
+        mediaHasUpdate = false;
+        return;
     }
-    qDebug("Update image resource.");
-    mediaUpdateThread = new MediaUpdateThread(this,this);
+
+    qDebug("Update media resource.");
     mediaUpdateThread->start();
     mediaHasUpdate = false;
 }
@@ -90,44 +95,27 @@ void MainWindow::slot_handleSearchResult(QFileInfoList fileInfoList)
     m_galleryWid->processFileList(fileInfoList);
 }
 
-void MainWindow::onApplicationClose()
+void MainWindow::exitApplication()
 {
-    if(m_receiver){
-        delete m_receiver;
+    if (m_mediaUpdateReceiver) {
+        delete m_mediaUpdateReceiver;
+        m_mediaUpdateReceiver = 0;
     }
 
-    if(mediaUpdateThread && mediaUpdateThread->isRunning())
+    if (mediaUpdateThread->isRunning())
         mediaUpdateThread->waitForThreadFinished();
 
     this->close();
 }
 
-GalleryWidgets* MainWindow::getGalleryWidget()
+GalleryWidgets *MainWindow::getGalleryWidget()
 {
     return m_galleryWid;
 }
 
-void MainWindow::slot_standby()
-{
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-    switch(event->key())
-    {
-    case Qt::Key_PowerOff:
-        // When key_power enter
-        QTimer::singleShot(100, this, SLOT(slot_standby()));
-        break;
-    default:
-        break;
-    }
-}
-
-MediaUpdateThread::MediaUpdateThread(QObject *parent,MainWindow *mainWindow):QThread(parent)
+MediaUpdateThread::MediaUpdateThread(MainWindow *mainWindow) : QThread(mainWindow)
 {
     m_mainWindow = mainWindow;
-    qRegisterMetaType<QFileInfoList>("QFileInfoList");
 
     m_searchSuffixList.append("jpg");
     m_searchSuffixList.append("png");
@@ -136,6 +124,8 @@ MediaUpdateThread::MediaUpdateThread(QObject *parent,MainWindow *mainWindow):QTh
     m_searchSuffixList.append("svg");
     m_searchSuffixList.append("titf");
     m_searchSuffixList.append("gif");
+
+    qRegisterMetaType<QFileInfoList>("QFileInfoList");
 }
 
 void MediaUpdateThread::waitForThreadFinished()
@@ -148,18 +138,17 @@ void MediaUpdateThread::waitForThreadFinished()
 QFileInfoList MediaUpdateThread::findImgFiles(const QString &path)
 {
     QFileInfoList imageFiles;
+    QDirIterator it(path, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
 
-    QDirIterator it(path,QDir::Files|QDir::Dirs|QDir::NoDotAndDotDot);
-    while (it.hasNext()){
+    while (it.hasNext()) {
         QString name = it.next();
         QFileInfo info(name);
-        if (info.isDir()){
+        if (info.isDir()) {
             imageFiles.append(findImgFiles(name));
-        }else{
-            for(int i=0;i<m_searchSuffixList.count();i++){
-                if(info.suffix().compare(m_searchSuffixList.at(i),Qt::CaseInsensitive) == 0){
+        } else {
+            for (int i = 0; i < m_searchSuffixList.count(); i++) {
+                if (info.suffix().compare(m_searchSuffixList.at(i), Qt::CaseInsensitive) == 0)
                     imageFiles.append(info);
-                }
             }
         }
     }
@@ -171,8 +160,5 @@ void MediaUpdateThread::run()
     QFileInfoList fileInfoList = findImgFiles(GALLERY_SEARCH_PATH);
     if (!isInterruptionRequested())
         emit m_mainWindow->searchResultAvailable(fileInfoList);
-}
-
-MainWindow::~MainWindow()
-{
+    QThread::sleep(1);
 }

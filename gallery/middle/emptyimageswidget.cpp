@@ -1,9 +1,9 @@
 #include "emptyimageswidget.h"
-#include "QVBoxLayout"
-
-#include <QLabel>
 #include "basepushbutton.h"
-#include "global_value.h"
+#include "constant.h"
+
+#include <QVBoxLayout>
+#include <QLabel>
 
 #ifdef DEVICE_EVB
 int center_image_width = 300;
@@ -11,29 +11,29 @@ int center_image_width = 300;
 int center_image_width = 150;
 #endif
 
-EmptyImagesWidget::EmptyImagesWidget(QWidget *parent):BaseWidget(parent)
+EmptyImagesWidget::EmptyImagesWidget(QWidget *parent) : BaseWidget(parent)
 {
-    setStyleSheet("QLabel{color:white}");
     initLayout();
 }
+
 void EmptyImagesWidget::initLayout()
 {
     QVBoxLayout *vmainlyout = new QVBoxLayout;
 
     FlatButton *centerImage = new FlatButton(this);
     centerImage->setEnabled(false);
-    centerImage->setFixedSize(center_image_width,center_image_width);
-    centerImage->setStyleSheet("QPushButton{background:transparent;border-image:url(:/image/gallery/ic_empty_image.png)}");
+    centerImage->setFixedSize(center_image_width, center_image_width);
+    centerImage->setBackgroundImage(":/image/gallery/ic_empty_image.png");
 
     QHBoxLayout *centerImageLyout = new QHBoxLayout;
     centerImageLyout->addStretch(0);
     centerImageLyout->addWidget(centerImage);
     centerImageLyout->addStretch(0);
 
-    tip1 = new QLabel(this);
+    QLabel *tip1 = new QLabel(tr("All in the family"), this);
     tip1->setAlignment(Qt::AlignCenter);
 
-    tip2= new QLabel(tr("Take a picture & Photo saved on this device appear here."),this);
+    QLabel *tip2 = new QLabel(tr("Take a picture & Photo saved on this device appear here."), this);
     tip2->setAlignment(Qt::AlignCenter);
 
     vmainlyout->addStretch(0);
@@ -44,7 +44,7 @@ void EmptyImagesWidget::initLayout()
     vmainlyout->addStretch(0);
     vmainlyout->setSpacing(15);
 
-    // In order to set the layout in the center of page
+    // set the layout in the center of page
     QHBoxLayout *lyout = new QHBoxLayout;
     lyout->addStretch(1);
     lyout->addLayout(vmainlyout);

@@ -4,43 +4,24 @@
 <context>
     <name>EmptyImagesWidget</name>
     <message>
+        <location filename="../gallery/middle/emptyimageswidget.cpp" line="33"/>
         <source>All in the family</source>
-        <translation type="obsolete">All in the family</translation>
+        <translation>All in the family</translation>
     </message>
     <message>
         <location filename="../gallery/middle/emptyimageswidget.cpp" line="36"/>
         <source>Take a picture &amp; Photo saved on this device appear here.</source>
-        <translation type="unfinished">Take a picture &amp; Photo saved on this device appear here.</translation>
-    </message>
-</context>
-<context>
-    <name>GalleryMiddleWidgets</name>
-    <message>
-        <location filename="../gallery/middle/gallerymiddlewidgets.cpp" line="25"/>
-        <source>All in the family</source>
-        <translation type="unfinished">All in the family</translation>
-    </message>
-    <message>
-        <location filename="../gallery/middle/gallerymiddlewidgets.cpp" line="26"/>
-        <source>Take a picture &amp; Photo saved on this device appear here.</source>
-        <translation type="unfinished">Take a picture &amp; Photo saved on this device appear here.</translation>
-    </message>
-</context>
-<context>
-    <name>GalleryTopWidgets</name>
-    <message>
-        <location filename="../gallery/top/gallerytopwidgets.cpp" line="26"/>
-        <source>imageGallery</source>
-        <translation type="unfinished">ImageGallery</translation>
+        <translation>Take a picture &amp; Photo saved on this device appear here.</translation>
     </message>
 </context>
 <context>
     <name>GalleryWidgets</name>
     <message>
-        <location filename="../gallery/gallerywidgets.cpp" line="73"/>
-        <location filename="../gallery/gallerywidgets.cpp" line="85"/>
+        <location filename="../gallery/gallerywidgets.cpp" line="32"/>
+        <location filename="../gallery/gallerywidgets.cpp" line="83"/>
+        <location filename="../gallery/gallerywidgets.cpp" line="96"/>
         <source>imageGallery</source>
-        <translation type="unfinished">ImageGallery</translation>
+        <translation>Gallery</translation>
     </message>
 </context>
 <context>
@@ -48,102 +29,121 @@
     <message>
         <location filename="../gallery/middle/imagedetailwidget.cpp" line="43"/>
         <source>Image Infomation</source>
-        <translation type="unfinished">Image Infomation</translation>
+        <translation>Image Infomation</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/imagedetailwidget.cpp" line="74"/>
+        <location filename="../gallery/middle/imagedetailwidget.cpp" line="72"/>
         <source>Confirm</source>
-        <translation type="unfinished">Confirm</translation>
+        <translation>Confirm</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/imagedetailwidget.cpp" line="139"/>
+        <location filename="../gallery/middle/imagedetailwidget.cpp" line="147"/>
         <source>Name</source>
-        <translation type="unfinished">Name</translation>
+        <translation>Name</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/imagedetailwidget.cpp" line="140"/>
+        <location filename="../gallery/middle/imagedetailwidget.cpp" line="148"/>
         <source>Pattern</source>
-        <translation type="unfinished">Pattern</translation>
+        <translation>Pattern</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/imagedetailwidget.cpp" line="141"/>
+        <location filename="../gallery/middle/imagedetailwidget.cpp" line="149"/>
         <source>Resolution</source>
-        <translation type="unfinished">Resolution</translation>
+        <translation>Resolution</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/imagedetailwidget.cpp" line="142"/>
+        <location filename="../gallery/middle/imagedetailwidget.cpp" line="150"/>
         <source>Location</source>
-        <translation type="unfinished">Location</translation>
+        <translation>Location</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/imagedetailwidget.cpp" line="143"/>
+        <location filename="../gallery/middle/imagedetailwidget.cpp" line="151"/>
         <source>Size</source>
-        <translation type="unfinished">Size</translation>
+        <translation>Size</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/imagedetailwidget.cpp" line="144"/>
+        <location filename="../gallery/middle/imagedetailwidget.cpp" line="152"/>
         <source>CreateTime</source>
-        <translation type="unfinished">CreateTime</translation>
+        <translation>CreateTime</translation>
+    </message>
+</context>
+<context>
+    <name>ImageViewer</name>
+    <message>
+        <location filename="../gallery/middle/imageviewer.cpp" line="79"/>
+        <source>image loading..</source>
+        <translation>Please wait a moment while the picture is loading..</translation>
     </message>
 </context>
 <context>
     <name>ImageViewerWidget</name>
     <message>
-        <location filename="../gallery/middle/imageviewerwidget.cpp" line="131"/>
+        <location filename="../gallery/middle/imageviewerwidget.cpp" line="120"/>
         <source>Delete images?</source>
-        <translation type="unfinished">Delete images?</translation>
+        <translation>Delete images ?</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/imageviewerwidget.cpp" line="131"/>
+        <location filename="../gallery/middle/imageviewerwidget.cpp" line="120"/>
         <source>Delete</source>
-        <translation type="unfinished">Delete</translation>
+        <translation>Delete</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/imageviewerwidget.cpp" line="131"/>
+        <location filename="../gallery/middle/imageviewerwidget.cpp" line="120"/>
         <source>Cancel</source>
-        <translation type="unfinished">Cancel</translation>
+        <translation>Cancel</translation>
+    </message>
+</context>
+<context>
+    <name>MiddleWidget</name>
+    <message>
+        <source>All in the family</source>
+        <translation type="vanished">All in the family</translation>
+    </message>
+    <message>
+        <source>Take a picture &amp; Photo saved on this device appear here.</source>
+        <translation type="vanished">Take a picture &amp; Photo saved on this device appear here.</translation>
     </message>
 </context>
 <context>
     <name>ThumbImageWidget</name>
     <message>
-        <location filename="../gallery/middle/thumbimagewidget.cpp" line="54"/>
-        <location filename="../gallery/middle/thumbimagewidget.cpp" line="188"/>
+        <location filename="../gallery/middle/thumbimagewidget.cpp" line="48"/>
+        <location filename="../gallery/middle/thumbimagewidget.cpp" line="175"/>
         <source>EditMode</source>
-        <translation type="unfinished">EditMode</translation>
+        <translation>EditMode</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/thumbimagewidget.cpp" line="58"/>
-        <location filename="../gallery/middle/thumbimagewidget.cpp" line="187"/>
+        <location filename="../gallery/middle/thumbimagewidget.cpp" line="52"/>
+        <location filename="../gallery/middle/thumbimagewidget.cpp" line="174"/>
         <source>Refresh</source>
-        <translation type="unfinished">Refresh</translation>
+        <translation>Refresh</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/thumbimagewidget.cpp" line="114"/>
+        <location filename="../gallery/middle/thumbimagewidget.cpp" line="97"/>
         <source>★ Image and Preview(%1)</source>
-        <translation type="unfinished"> Image and Preview(%1)</translation>
+        <translation>★ Image and Preview(%1)</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/thumbimagewidget.cpp" line="122"/>
+        <location filename="../gallery/middle/thumbimagewidget.cpp" line="105"/>
         <source>Current has %1 images seleted</source>
-        <translation type="unfinished">Current has %1 images seleted</translation>
+        <translation>Current has %1 images seleted</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/thumbimagewidget.cpp" line="192"/>
-        <location filename="../gallery/middle/thumbimagewidget.cpp" line="201"/>
+        <location filename="../gallery/middle/thumbimagewidget.cpp" line="180"/>
+        <location filename="../gallery/middle/thumbimagewidget.cpp" line="189"/>
         <source>Delete</source>
-        <translation type="unfinished">Delete</translation>
+        <translation>Delete</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/thumbimagewidget.cpp" line="193"/>
-        <location filename="../gallery/middle/thumbimagewidget.cpp" line="201"/>
+        <location filename="../gallery/middle/thumbimagewidget.cpp" line="181"/>
+        <location filename="../gallery/middle/thumbimagewidget.cpp" line="189"/>
         <source>Cancel</source>
-        <translation type="unfinished">Cancel</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../gallery/middle/thumbimagewidget.cpp" line="201"/>
+        <location filename="../gallery/middle/thumbimagewidget.cpp" line="189"/>
         <source>Delete images?</source>
-        <translation type="unfinished">Delete images?</translation>
+        <translation>Delete images?</translation>
     </message>
 </context>
 </TS>

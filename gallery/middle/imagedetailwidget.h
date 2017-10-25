@@ -6,32 +6,30 @@
 #include <QLabel>
 #include <QEventLoop>
 
+#include "basewidget.h"
 #include "basepushbutton.h"
 
-class ImageItem:public QWidget
+class ImageItem : public BaseWidget
 {
 public:
-    ImageItem(QWidget *parent=0);
-    void updateItem(QString title,QString text);
+    ImageItem(QWidget *parent = 0);
+    void updateItem(QString title, QString text);
+
 private:
     QLabel *titleLabel;
     QLabel *textLabel;
 };
 
-class ImageDetailWidget:public QDialog
+
+class ImageDetailWidget : public QDialog
 {
     Q_OBJECT
 public:
-    ImageDetailWidget(QWidget *parent=0);
+    ImageDetailWidget(QWidget *parent = 0);
 
-    int static showImageDetail(QWidget *parent,QString imagePath);
+    int static showImageDetail(QWidget *parent, QString imagePath, QSize size);
+
 private:
-    void initLayout();
-    void initConnection();
-protected:
-    int exec();
-    void closeEvent(QCloseEvent *event);
-public:
     FlatButton *m_btnConfirm;
 
     ImageItem *nameItem;
@@ -43,7 +41,12 @@ public:
 
     QEventLoop* m_eventLoop;
 
+    void initLayout();
+    void initConnection();
 
+protected:
+    int exec();
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // IMAGEDETAILWIDGET_H

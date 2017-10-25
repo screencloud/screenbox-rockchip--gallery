@@ -1,23 +1,37 @@
 #include "imageviewer.h"
-#include <QApplication>
-#include <QDesktopWidget>
+
 #include <QMatrix>
 #include <QPoint>
-#include <QCursor>
-#include <QDebug>
+
+#include "basewidget.h"
+#include "constant.h"
 
 ImageViewer::ImageViewer(QWidget *parent) : QLabel(parent)
-  ,m_scale(0.0)
-  ,m_percentage(0.0)
-  ,m_originX(0.0), m_originY(0.0)
-  ,m_basicX(0.0), m_basicY(0.0)
-  ,currentStepScaleFactor(1)
+  , m_showLoadTitle(false)
+  , m_movie(new QMovie())
+  , m_scale(0.0)
+  , m_percentage(0.0)
+  , m_originX(0.0)
+  , m_originY(0.0)
+  , m_basicX(0.0)
+  , m_basicY(0.0)
+  , currentStepScaleFactor(1)
+  , m_loadThread(new PixmalLoadThread(this, &m_pixmap))
 {
     setAttribute(Qt::WA_AcceptTouchEvents);
-    this->grabGesture(Qt::PinchGesture);
 
-    m_movie = new QMovie();
-    this->setAlignment(Qt::AlignCenter);
+    grabGesture(Qt::PinchGesture);
+    setAlignment(Qt::AlignCenter);
+
+    // loading title font.
+    setAlignment(Qt::AlignCenter);
+    BaseWidget::setWidgetFontSize(this, font_size_big);
+    BaseWidget::setWidgetFontBold(this);
+
+    m_loadTitleShowTimer = new QTimer(this);
+    m_loadTitleShowTimer->setSingleShot(true);
+    connect(m_loadTitleShowTimer, SIGNAL(timeout()), this, SLOT(showLoadingTitle()));
+    connect(m_loadThread, SIGNAL(finished()), this, SLOT(hideLoadingTitle()));
 }
 
 ImageViewer::~ImageViewer()
@@ -25,51 +39,72 @@ ImageViewer::~ImageViewer()
     delete m_movie;
 }
 
-void ImageViewer::setPixmap(const QPixmap &pixmap)
+bool ImageViewer::setPixmap(const QString &path)
 {
-    m_pixmap = pixmap;
-    showSuitableSize();
-    gifShow = false;
+    m_gifShow = false;
+
+    if (m_loadThread->isRunning())
+        return false;
+
+    if (!m_loadTitleShowTimer->isActive())
+        m_loadTitleShowTimer->start(800);
+
+    m_loadThread->changeLoadPath(path);
+    m_loadThread->start();
+    return true;
 }
 
 void ImageViewer::setMoviePath(QString filePath)
 {
     m_movie->stop();
     m_movie->setFileName(filePath);
-    this->setMovie(m_movie);
+    setMovie(m_movie);
     m_movie->start();
-    gifShow = true;
+
+    m_gifShow = true;
+    update();
+}
+
+void ImageViewer::hideLoadingTitle()
+{
+    m_loadTitleShowTimer->stop();
+
+    m_showLoadTitle = false;
+    setText("");
+    update();
+}
+
+void ImageViewer::showLoadingTitle()
+{
+    m_showLoadTitle = true;
+    setText(tr("image loading.."));
     update();
 }
 
 void ImageViewer::ariseScale(int rate)
 {
     double old_percentage = m_percentage;
-    double step = static_cast<double>(rate)/100.0*5*old_percentage;
-    m_percentage += step;
-    if(m_percentage < 0.01)
-    {
-        m_percentage = 0.01;
-    }
-    else if(m_percentage >1.5)
-    {
-        m_percentage = 1.5;
-    }
+    double step = static_cast<double>(rate) / 100.0 * 5 * old_percentage;
 
-    m_scale = m_percentage*m_scale/old_percentage;
+    m_percentage += step;
+    if (m_percentage < 0.01)
+        m_percentage = 0.01;
+    else if (m_percentage > 1.5)
+        m_percentage = 1.5;
+    m_scale = m_percentage * m_scale / old_percentage;
 
     update();
-    emit percentageChanged( m_percentage );
+    emit percentageChanged(m_percentage);
 }
 
 void ImageViewer::showOriginalSize()
 {
     double old_percentage = m_percentage;
     m_percentage = 1.0;
-    m_scale = m_percentage*m_scale/old_percentage;
+    m_scale = m_percentage * m_scale / old_percentage;
 
     update();
-    emit percentageChanged( m_percentage );
+    emit percentageChanged(m_percentage);
 }
 
 void ImageViewer::showSuitableSize()
@@ -82,25 +117,23 @@ void ImageViewer::showSuitableSize()
     double Wpercentage = showwidth / pixwidth;
     double Hpercentage = showheight / pixheight;
     m_percentage = qMin(Wpercentage, Hpercentage);
-    m_suitableWidth = pixwidth*m_percentage;
-    m_suitableHeight = pixheight*m_percentage;
-    if(m_percentage < 0.01)
-    {
+    m_suitableWidth = pixwidth * m_percentage;
+    m_suitableHeight = pixheight * m_percentage;
+
+    if (m_percentage < 0.01)
         m_percentage = 0.01;
-    }
-    else if( m_percentage > 1)
-    {
+    else if (m_percentage > 1)
         m_percentage = 1.0;
-    }
+
     m_scale = 1.0;
 
-    m_basicX = showwidth/2.0 - pixwidth*m_percentage/2.0;
+    m_basicX = showwidth / 2.0 - pixwidth * m_percentage / 2.0;
     m_originX = m_basicX;
-    m_basicY = showheight/2.0- pixheight*m_percentage/2.0;
+    m_basicY = showheight / 2.0 - pixheight * m_percentage / 2.0;
     m_originY = m_basicY;
 
     update();
-    emit percentageChanged( m_percentage );
+    emit percentageChanged(m_percentage);
 }
 
 void ImageViewer::zoomIn()
@@ -131,11 +164,16 @@ void ImageViewer::anticlockwise90()
     showSuitableSize();
 }
 
+QSize ImageViewer::getSize()
+{
+    return m_pixmap.size();
+}
+
 void ImageViewer::paintEvent(QPaintEvent *event)
 {
-    if(gifShow){
+    if (m_gifShow || m_showLoadTitle) {
         QLabel::paintEvent(event);
-    }else{
+    } else {
         Q_UNUSED(event);
 
         double pixwidth = static_cast<double>(m_pixmap.width());
@@ -147,7 +185,7 @@ void ImageViewer::paintEvent(QPaintEvent *event)
         double Hscalerate = pixheight / showheight;
         double compare = qMax(Wscalerate, Hscalerate);
 
-        if( compare < 1.0 )
+        if (compare < 1.0)
             compare = 1.0;
 
         QPainter painter(this);
@@ -161,11 +199,11 @@ void ImageViewer::paintEvent(QPaintEvent *event)
         painter.restore();
 
         //Draw Image
-        QRect showRect = QRect(m_originX, m_originY, pixwidth/compare, pixheight/compare);
+        QRect showRect = QRect(m_originX, m_originY, pixwidth / compare, pixheight / compare);
         painter.save();
-        painter.translate(showwidth/2.0, (showheight/2.0));
+        painter.translate(showwidth / 2.0, (showheight / 2.0));
         painter.scale(m_scale, m_scale);
-        painter.translate(-(showwidth/2.0), -(showheight/2.0));
+        painter.translate(-(showwidth / 2.0), -(showheight / 2.0));
         painter.drawPixmap(showRect, m_pixmap);
         painter.restore();
     }
@@ -174,6 +212,7 @@ void ImageViewer::paintEvent(QPaintEvent *event)
 void ImageViewer::wheelEvent(QWheelEvent *event)
 {
     QWidget::wheelEvent(event);
+
     int numDegrees = event->delta() / 8;
     int numSteps = numDegrees / 15;
     if (event->orientation() == Qt::Horizontal) {
@@ -185,14 +224,10 @@ void ImageViewer::wheelEvent(QWheelEvent *event)
 
 void ImageViewer::mousePressEvent(QMouseEvent *event)
 {
-    if( event->button() == Qt::LeftButton  )
-    {
+    if (event->button() == Qt::LeftButton)
         m_pressPoint = event->pos();
-    }
-    else if( event->button() == Qt::RightButton )
-    {
+    else if (event->button() == Qt::RightButton)
         emit rightButtonClicked();
-    }
 
     QWidget::mousePressEvent(event);
 }
@@ -200,84 +235,87 @@ void ImageViewer::mousePressEvent(QMouseEvent *event)
 void ImageViewer::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
-    if( event->button() == Qt::LeftButton )
-    {
+    if (event->button() == Qt::LeftButton) {
         m_basicX = m_originX;
         m_basicY = m_originY;
     }
+
     QWidget::mouseReleaseEvent(event);
 }
 
 void ImageViewer::mouseMoveEvent(QMouseEvent *event)
 {
-    if(m_pressPoint != QPoint(-1,-1))
-    {
+    if (m_pressPoint != QPoint(-1, -1)) {
         QPoint move_pos = event->pos();
 
-        if( rect().contains(event->pos()) )
-        {
+        if (rect().contains(event->pos())) {
             move_pos -= m_pressPoint;
-            m_originX = m_basicX + move_pos.x()/m_scale;
-            m_originY = m_basicY + move_pos.y()/m_scale;
+            m_originX = m_basicX + move_pos.x() / m_scale;
+            m_originY = m_basicY + move_pos.y() / m_scale;
             update();
-        }
-        else
-        {
+        } else {
             QPoint point;
-            if( event->pos().x() < 0 )
-            {
-                point = QPoint( 0, event->pos().y() );
-            }
-            else if( event->pos().x() > rect().width()-1 )
-            {
-                point = QPoint( rect().width()-1, event->pos().y() );
-            }
-            else if( event->pos().y() < 0 )
-            {
-                point = QPoint( event->pos().x(), 0 );
-            }
-            else if( event->pos().y() > rect().height()-1 )
-            {
-                point = QPoint( event->pos().x(), rect().height()-1 );
-            }
+            if (event->pos().x() < 0)
+                point = QPoint( 0, event->pos().y());
+            else if (event->pos().x() > rect().width()-1)
+                point = QPoint( rect().width()-1, event->pos().y());
+            else if (event->pos().y() < 0 )
+                point = QPoint( event->pos().x(), 0);
+            else if (event->pos().y() > rect().height() - 1)
+                point = QPoint( event->pos().x(), rect().height()-1);
         }
     }
+
     QWidget::mouseMoveEvent(event);
 }
 
 bool ImageViewer::event(QEvent *event)
 {
-    if(event->type() == QEvent::Gesture)
-    {
+    if (event->type() == QEvent::Gesture) {
         QGestureEvent *gestureEvent = static_cast<QGestureEvent*>(event);
-        if(QGesture *gesture = gestureEvent->gesture(Qt::PinchGesture))
-        {
-            m_pressPoint = QPoint(-1,-1);
+        if (QGesture *gesture = gestureEvent->gesture(Qt::PinchGesture)) {
+            m_pressPoint = QPoint(-1, -1);
             QPinchGesture *pinchGesture = static_cast<QPinchGesture*>(gesture);
             QPinchGesture::ChangeFlags changeFlags = pinchGesture->changeFlags();
-            if(changeFlags & QPinchGesture::ScaleFactorChanged)
-            {
+            if (changeFlags & QPinchGesture::ScaleFactorChanged) {
 #ifdef DEVICE_EVB
-                if(pinchGesture->totalScaleFactor()>1.2)
-                {
+                if (pinchGesture->totalScaleFactor() > 1.2)
                     ariseScale(1);
-                }
-                else if(pinchGesture->totalScaleFactor()<0.8)
-                {
+                else if (pinchGesture->totalScaleFactor() < 0.8)
                     ariseScale(-1);
-                }
 #else
-                if(pinchGesture->totalScaleFactor()>1.6)
-                {
+                if (pinchGesture->totalScaleFactor() > 1.6)
                     ariseScale(1);
-                }
-                else if(pinchGesture->totalScaleFactor()<0.4)
-                {
+                else if (pinchGesture->totalScaleFactor() < 0.4)
                     ariseScale(-1);
-                }
 #endif
             }
         }
     }
+
     return QWidget::event(event);
+}
+
+PixmalLoadThread::PixmalLoadThread(ImageViewer *parent, QPixmap *pixmap) : QThread(parent)
+  , m_parent(parent)
+  , m_pixmap(pixmap)
+{
+}
+
+PixmalLoadThread::~PixmalLoadThread()
+{
+    requestInterruption();
+    quit();
+    wait();
+}
+
+void PixmalLoadThread::changeLoadPath(const QString &path)
+{
+    m_loadPath = path;
+}
+
+void PixmalLoadThread::run()
+{
+    m_pixmap->load(m_loadPath);
+    m_parent->showSuitableSize();
 }
