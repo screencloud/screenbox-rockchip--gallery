@@ -67,17 +67,17 @@ void ImageViewerWidget::updateRes(QString imagePath)
 
 void ImageViewerWidget::slot_onImagesResChanged(bool update)
 {
-    QMap<QString,QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
+    QMap<QString, QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
     if (!imagesRes.keys().contains(m_imagePath) && update) {
-        QMap<QString,QImage*>::Iterator it = imagesRes.begin();
+        QMap<QString, QImage*>::Iterator it = imagesRes.begin();
         updateRes(it.key());
     }
 }
 
 void ImageViewerWidget::slot_lastImage()
 {
-    QMap<QString,QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
-    QMap<QString,QImage*>::Iterator it = imagesRes.begin();
+    QMap<QString, QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
+    QMap<QString, QImage*>::Iterator it = imagesRes.begin();
     while (it != imagesRes.end()) {
         if (it.key() == m_imagePath) {
             if (it != imagesRes.begin())
@@ -93,14 +93,15 @@ void ImageViewerWidget::slot_lastImage()
 
 void ImageViewerWidget::slot_nextImage()
 {
-    QMap<QString,QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
-    QMap<QString,QImage*>::Iterator it = imagesRes.begin();
+    QMap<QString, QImage*> &imagesRes = mainWindow->getGalleryWidget()->getImagesRes();
+    QMap<QString, QImage*>::Iterator it = imagesRes.begin();
     while (it != imagesRes.end()) {
         if (it.key() == m_imagePath) {
             if (it != (imagesRes.end() - 1))
                 ++it;
             else
                 it = imagesRes.begin();
+
             updateRes(it.key());
             break;
         }

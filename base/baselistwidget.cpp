@@ -24,16 +24,17 @@ void BaseListWidget::init()
                                        "QScrollBar::sub-line:vertical{border:1px rgb(230,230,230);height: 0px;}"
                                        "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background:transparent;}");
 
-    setStyleSheet("QListWidget::item:selected{background: transparent;}");
     /* cancel the border in ListWidget */
     setFrameShape(QListWidget::NoFrame);
     /* set QListWidget be IconMode to show image thumnail and unable to drag */
     setViewMode(QListView::IconMode);
     setMovement(QListView::Static);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
-    setFocusPolicy(Qt::NoFocus);
     setStyleSheet("QListWidget::indicator{subcontrol-position:top;}"
-                  "QListWidget{background:transparent}");
+                  "QListWidget{background:transparent}"
+                  "QListWidget::item{padding:2px;border:0px solid gray;}"
+                  "QListWidget::item:selected:active{padding:2px;background:red}");
+
 
 }
 

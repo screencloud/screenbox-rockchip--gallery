@@ -108,6 +108,7 @@ void ThumbImageWidget::updateBottomSeleteText()
 void ThumbImageWidget::onImagesResInsert(QString path, QImage *thumb)
 {
     QListWidgetItem *litsItem = new QListWidgetItem();
+    litsItem->setData(Qt::DisplayRole, path);
     litsItem->setSizeHint(QSize(thumb_image_width, thumb_image_width));
 
     ThumbImageItem *itemWid = new ThumbImageItem(path, thumb);
@@ -115,6 +116,7 @@ void ThumbImageWidget::onImagesResInsert(QString path, QImage *thumb)
     m_imageListWid->setItemWidget(litsItem, itemWid);
     m_thumbs.insert(path, litsItem);
 
+    m_imageListWid->sortItems();
     updateImageCount();
 }
 
@@ -127,10 +129,10 @@ void ThumbImageWidget::onImagesResRemove(QString path)
             delete litsItem;
         }
 
-        updateImageCount();
-
         if (m_imageListWid->count() == 0)
             emit m_middleWidgets->imageEmpty();
+        else
+            updateImageCount();
     }
 }
 
@@ -139,10 +141,12 @@ void ThumbImageWidget::slot_onImagesResChanged()
     if (editMode)
         slot_changeImageMode();
 
-    updateImageCount();
-
-    if (m_imageListWid->count() == 0)
+    if (m_imageListWid->count() == 0) {
         emit m_middleWidgets->imageEmpty();
+    } else {
+        m_imageListWid->sortItems();
+        updateImageCount();
+    }
 }
 
 void ThumbImageWidget::slot_onListItemClick(QListWidgetItem *listItem)

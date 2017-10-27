@@ -46,7 +46,6 @@ private slots:
 
 public slots:
     void slot_onImagesResChanged();
-    void slot_onImageLoadComplete();
 
 signals:
     void loadImageComplete();

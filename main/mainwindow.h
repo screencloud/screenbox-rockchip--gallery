@@ -29,10 +29,10 @@ protected:
 
 private:
     bool mediaHasUpdate;
+    MediaUpdateThread *m_mediaUpdateThread;
 
     GalleryWidgets *m_galleryWid;
     MediaNotificationReceiver *m_mediaUpdateReceiver;
-    MediaUpdateThread *mediaUpdateThread;
 
     void initData();
     void initLayout();

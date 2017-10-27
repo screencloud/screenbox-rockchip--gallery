@@ -9,7 +9,7 @@ const QString GALLERY_SEARCH_PATH = QStandardPaths::writableLocation(QStandardPa
 
 MainWindow::MainWindow(QWidget *parent) : BaseWindow(parent)
   , mediaHasUpdate(false)
-  , mediaUpdateThread(0)
+  , m_mediaUpdateThread(0)
 {
     initData();
     initLayout();
@@ -30,7 +30,7 @@ void MainWindow::initData()
     m_mediaUpdateReceiver = new MediaNotificationReceiver();
     m_mediaUpdateReceiver->receive();
 
-    mediaUpdateThread = new MediaUpdateThread(this);
+    m_mediaUpdateThread = new MediaUpdateThread(this);
 }
 
 void MainWindow::initLayout()
@@ -68,13 +68,13 @@ void MainWindow::slot_setUpdateFlag()
 
 void MainWindow::slot_updateMedia()
 {
-    if (mediaUpdateThread->isRunning()) {
+    if (m_mediaUpdateThread->isRunning()) {
         mediaHasUpdate = false;
         return;
     }
 
     qDebug("Update media resource.");
-    mediaUpdateThread->start();
+    m_mediaUpdateThread->start();
     mediaHasUpdate = false;
 }
 
@@ -102,8 +102,8 @@ void MainWindow::exitApplication()
         m_mediaUpdateReceiver = 0;
     }
 
-    if (mediaUpdateThread->isRunning())
-        mediaUpdateThread->waitForThreadFinished();
+    if (m_mediaUpdateThread->isRunning())
+        m_mediaUpdateThread->waitForThreadFinished();
 
     this->close();
 }
@@ -160,5 +160,4 @@ void MediaUpdateThread::run()
     QFileInfoList fileInfoList = findImgFiles(GALLERY_SEARCH_PATH);
     if (!isInterruptionRequested())
         emit m_mainWindow->searchResultAvailable(fileInfoList);
-    QThread::sleep(1);
 }

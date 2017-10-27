@@ -45,7 +45,7 @@ void GalleryWidgets::initConnection()
 {
     connect(m_topWid, SIGNAL(returnClicked()), this, SLOT(slot_onReturnClicked()));
     connect(m_middleWid, SIGNAL(viewerResChanged(QString)), this, SLOT(slot_onViewerResChanged(QString)));
-    connect(this, SIGNAL(loadImageComplete()), this, SLOT(slot_onImageLoadComplete()));
+    connect(this, SIGNAL(loadImageComplete()), this, SLOT(slot_onImagesResChanged()));
 }
 
 void GalleryWidgets::processFileList(QFileInfoList fileInfoList)
@@ -55,11 +55,6 @@ void GalleryWidgets::processFileList(QFileInfoList fileInfoList)
 
     m_loadImageThread->setFileInfoList(fileInfoList);
     m_loadImageThread->start();
-}
-
-void GalleryWidgets::slot_onImageLoadComplete()
-{
-    slot_onImagesResChanged();
 }
 
 void GalleryWidgets::removeImage(QString imagePath)
@@ -108,7 +103,7 @@ LoadImageThread::LoadImageThread(GalleryWidgets *parentWidget, MiddleWidget *mid
     m_middleWid = middleWid;
 
     qRegisterMetaType<QFileInfoList>("QFileInfoList");
-    qRegisterMetaType<QMap<QString,QImage>>("QMap<QString,QImage*>");
+    qRegisterMetaType<QMap<QString, QImage>>("QMap<QString, QImage*>");
 }
 
 void LoadImageThread::setFileInfoList(QFileInfoList infoList)
@@ -116,7 +111,8 @@ void LoadImageThread::setFileInfoList(QFileInfoList infoList)
     m_infoList = infoList;
 }
 
-void LoadImageThread::stopThread(){
+void LoadImageThread::stopThread()
+{
     requestInterruption();
     quit();
     wait();
@@ -135,7 +131,6 @@ void LoadImageThread::run()
     if (!filePathList.empty()) {
         for (it = imagesRes.begin(); it != imagesRes.end(); ) {
             if (!filePathList.contains(it.key())) {
-                qDebug("delete item: %s", qPrintable(it.key()));
                 emit m_middleWid->sig_imagesResRemove(it.key());
                 delete it.value();
                 imagesRes.erase(it++);
@@ -182,7 +177,7 @@ void LoadImageThread::run()
 QString LoadImageThread::fileMD5(QString path)
 {
     QString md5;
-    QByteArray bb =  QCryptographicHash::hash ( path.toLatin1(), QCryptographicHash::Md5);
+    QByteArray bb = QCryptographicHash::hash(path.toLatin1(), QCryptographicHash::Md5);
     md5.append(bb.toHex());
 
     return md5;

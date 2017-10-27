@@ -18,7 +18,7 @@ void TopWidget::initLayout()
 {
     QHBoxLayout *hmainlyout = new QHBoxLayout;
 
-    FourStateButton *btnReturn=new FourStateButton(return_resource_str, this);
+    FourStateButton *btnReturn = new FourStateButton(return_resource_str, this);
     btnReturn->setFixedSize(return_icon_width, return_icon_height);
 
     FlatButton *btnIcon = new FlatButton(this);
