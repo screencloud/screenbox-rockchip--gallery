@@ -165,6 +165,9 @@ void LoadImageThread::run()
             if (tempImage->load(thumb.absoluteFilePath())) {
                 imagesRes.insert(filePathList.at(i), tempImage);
                 emit m_middleWid->sig_imagesResInsert(filePathList.at(i), tempImage);
+                if (imagesRes.size() % 20 == 0) {
+                    QThread::msleep(500);
+                }
             } else {
                 delete tempImage;
             }
