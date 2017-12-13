@@ -16,8 +16,8 @@ MediaNotificationReceiver::~MediaNotificationReceiver()
 {
     qDebug() << "~MediaNotificationReceiver()";
     if (m_tcpSocket) {
-	m_tcpSocket->disconnectFromHost();
-	m_tcpSocket->close();
+        m_tcpSocket->disconnectFromHost();
+        m_tcpSocket->close();
         delete m_tcpSocket;
         m_tcpSocket = 0;
     }

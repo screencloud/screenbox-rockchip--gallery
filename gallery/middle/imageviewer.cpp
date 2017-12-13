@@ -41,6 +41,7 @@ ImageViewer::~ImageViewer()
 
 bool ImageViewer::setPixmap(const QString &path)
 {
+    m_movie->stop();
     m_gifShow = false;
 
     if (m_loadThread->isRunning())
