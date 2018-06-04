@@ -5,7 +5,10 @@
 #include <QDirIterator>
 #include <QStandardPaths>
 
-const QString GALLERY_SEARCH_PATH = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/mnt");
+const QString GALLERY_SEARCH_PATH_SDCARD = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/sdcard");
+const QString GALLERY_SEARCH_PATH_UDISK = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/udisk");
+const QString GALLERY_SEARCH_PATH_USERDATA = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/userdata");
+const QString GALLERY_SEARCH_PATH_OEM = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/oem");
 
 MainWindow::MainWindow(QWidget *parent) : BaseWindow(parent)
   , mediaHasUpdate(false)
@@ -157,7 +160,10 @@ QFileInfoList MediaUpdateThread::findImgFiles(const QString &path)
 
 void MediaUpdateThread::run()
 {
-    QFileInfoList fileInfoList = findImgFiles(GALLERY_SEARCH_PATH);
+    QFileInfoList fileInfoList = findImgFiles(GALLERY_SEARCH_PATH_SDCARD);
+    fileInfoList.append(findImgFiles(GALLERY_SEARCH_PATH_UDISK));
+    fileInfoList.append(findImgFiles(GALLERY_SEARCH_PATH_USERDATA));
+    fileInfoList.append(findImgFiles(GALLERY_SEARCH_PATH_OEM));
     if (!isInterruptionRequested())
         emit m_mainWindow->searchResultAvailable(fileInfoList);
 }
