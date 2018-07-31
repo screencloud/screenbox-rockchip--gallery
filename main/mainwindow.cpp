@@ -10,6 +10,7 @@ const QString GALLERY_SEARCH_PATH_UDISK = QStandardPaths::writableLocation(QStan
 const QString GALLERY_SEARCH_PATH_USERDATA = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/userdata");
 const QString GALLERY_SEARCH_PATH_OEM = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/oem");
 const QString GALLERY_SEARCH_PATH_MEDIA = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/media");
+const QString GALLERY_SEARCH_PATH_MNT = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/mnt");
 
 MainWindow::MainWindow(QWidget *parent) : BaseWindow(parent)
   , mediaHasUpdate(false)
@@ -166,6 +167,7 @@ void MediaUpdateThread::run()
     fileInfoList.append(findImgFiles(GALLERY_SEARCH_PATH_USERDATA));
     fileInfoList.append(findImgFiles(GALLERY_SEARCH_PATH_OEM));
     fileInfoList.append(findImgFiles(GALLERY_SEARCH_PATH_MEDIA));
+    fileInfoList.append(findImgFiles(GALLERY_SEARCH_PATH_MNT));
     if (!isInterruptionRequested())
         emit m_mainWindow->searchResultAvailable(fileInfoList);
 }
