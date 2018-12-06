@@ -5,8 +5,6 @@
 #include <QDirIterator>
 #include <QStandardPaths>
 
-const QString GALLERY_SEARCH_PATH_SDCARD = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/sdcard");
-const QString GALLERY_SEARCH_PATH_UDISK = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/udisk");
 const QString GALLERY_SEARCH_PATH_USERDATA = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/userdata");
 const QString GALLERY_SEARCH_PATH_OEM = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/oem");
 const QString GALLERY_SEARCH_PATH_MEDIA = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/media");
@@ -162,9 +160,7 @@ QFileInfoList MediaUpdateThread::findImgFiles(const QString &path)
 
 void MediaUpdateThread::run()
 {
-    QFileInfoList fileInfoList = findImgFiles(GALLERY_SEARCH_PATH_SDCARD);
-    fileInfoList.append(findImgFiles(GALLERY_SEARCH_PATH_UDISK));
-    fileInfoList.append(findImgFiles(GALLERY_SEARCH_PATH_USERDATA));
+    QFileInfoList fileInfoList = findImgFiles(GALLERY_SEARCH_PATH_USERDATA);
     fileInfoList.append(findImgFiles(GALLERY_SEARCH_PATH_OEM));
     fileInfoList.append(findImgFiles(GALLERY_SEARCH_PATH_MEDIA));
     fileInfoList.append(findImgFiles(GALLERY_SEARCH_PATH_MNT));
