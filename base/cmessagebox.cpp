@@ -16,7 +16,7 @@ CMessageBox::CMessageBox(QWidget *parent) : QDialog(parent)
   , m_eventLoop(NULL)
   , m_chooseResult(RESULT_CANCEL)
 {
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
     setStyleSheet("QDialog{border:1.5px solid rgb(0,120,215);background:rgb(43,43,43)}"
                   "QLabel{color:white}");
 

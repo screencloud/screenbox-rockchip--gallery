@@ -17,7 +17,7 @@ int title_width = 100;
 
 ImageDetailWidget::ImageDetailWidget(QWidget *parent) : QDialog(parent)
 {
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
     setMinimumHeight(detail_widget_height);
 
     setObjectName("ImageDetailWidget");
