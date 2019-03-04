@@ -4,12 +4,10 @@
 #include <QHBoxLayout>
 
 #ifdef DEVICE_EVB
-int detail_widget_height = 900;
 int confirm_button_width = 130;
 int confirm_button_hieght = 60;
 int title_width = 220;
 #else
-int detail_widget_height = 470;
 int confirm_button_width = 90;
 int confirm_button_hieght = 30;
 int title_width = 100;
@@ -18,7 +16,6 @@ int title_width = 100;
 ImageDetailWidget::ImageDetailWidget(QWidget *parent) : QDialog(parent)
 {
     setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
-    setMinimumHeight(detail_widget_height);
 
     setObjectName("ImageDetailWidget");
     setStyleSheet("#ImageDetailWidget{border:1.5px solid rgb(0,120,215);background:rgb(56,58,66);border-radius:5px;}"
