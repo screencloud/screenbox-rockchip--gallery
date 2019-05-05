@@ -127,6 +127,8 @@ void FlatButton::mouseReleaseEvent(QMouseEvent *event)
         QPushButton::mouseReleaseEvent(event);
     }
 
+    if (longPressedFlag)
+        longPressedFlag = false;
     m_timer->stop();
 }
 
