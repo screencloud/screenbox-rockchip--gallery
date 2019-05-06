@@ -90,7 +90,6 @@ void MainWindow::disableApplication()
 
 void MainWindow::enableApplication()
 {
-    qDebug("enable gallery application");
     this->setVisible(true);
 }
 
